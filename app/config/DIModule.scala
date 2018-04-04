@@ -17,10 +17,9 @@
 package config
 
 import com.google.inject.AbstractModule
-import uk.gov.hmrc.auth.core.AuthorisedFunctions
 
-class DIModule extends AbstractModule{
+class DIModule extends AbstractModule {
   def configure(): Unit = {
-    bind(classOf[AuthorisedFunctions]).to(classOf[MicroserviceAuthorisedFunctions]).asEagerSingleton()
+    bind(classOf[AppConfig]).to(classOf[MicroserviceAppConfig]).asEagerSingleton()
   }
 }

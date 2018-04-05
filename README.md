@@ -7,7 +7,8 @@
 This protected microservice provides a backend for Making Tax Digital for Businesses (MTDfB) VAT frontend services to retrieve VAT Return Obligation details for a user enrolled for MTD VAT.
 
 ## Running the application
-To run this microservice, you must have SBT installed. You should then be able to start the application using:                                                    
+To run this microservice, you must have SBT installed. You should then be able to start the application using:
+                                       
 ```sbt run```
 
 ### Testing

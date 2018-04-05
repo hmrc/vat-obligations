@@ -4,7 +4,7 @@
 [![Download](https://api.bintray.com/packages/hmrc/releases/vat-obligations/images/download.svg) ](https://bintray.com/hmrc/releases/vat-obligations/_latestVersion)
 
 ## Summary
-This protected microservice provides a backend for MTD VAT frontend services to retrieve VAT Return Obligation details for an MTD VAT user.
+This protected microservice provides a backend for Making Tax Digital for Businesses (MTDfB) VAT frontend services to retrieve VAT Return Obligation details for a user enrolled for MTD VAT.
 
 ## Running the application
 To run this microservice, you must have SBT installed. You should then be able to start the application using:                                                    

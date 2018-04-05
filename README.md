@@ -1,9 +1,20 @@
-# vat-obligations
+# VAT Obligations Microservice
 
-[![Build Status](https://travis-ci.org/hmrc/vat-obligations.svg)](https://travis-ci.org/hmrc/vat-obligations) [ ![Download](https://api.bintray.com/packages/hmrc/releases/vat-obligations/images/download.svg) ](https://bintray.com/hmrc/releases/vat-obligations/_latestVersion)
+[![Build Status](https://travis-ci.org/hmrc/vat-obligations.svg)](https://travis-ci.org/hmrc/vat-obligations)
+[![Download](https://api.bintray.com/packages/hmrc/releases/vat-obligations/images/download.svg) ](https://bintray.com/hmrc/releases/vat-obligations/_latestVersion)
 
-This is a placeholder README.md for a new repository
+## Summary
+This protected microservice provides a backend for MTD VAT frontend services to retrieve VAT Return Obligation details for an MTD VAT user.
 
-### License
+## Running the application
+To run this microservice, you must have SBT installed. You should then be able to start the application using:                                                    
+```sbt run```
 
+### Testing
+```sbt test it:test```
+
+### Requirements
+This service is written in [Scala](http://www.scala-lang.org/) and [Play](http://playframework.com/), so needs at least a [JRE] to run.
+
+## License
 This code is open source software licensed under the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html")

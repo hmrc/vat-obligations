@@ -16,15 +16,10 @@
 
 package config
 
-import auth.MicroserviceAuthorisedFunctions
-import com.google.inject.AbstractModule
-import controllers.actions.{AuthAction, AuthActionImpl}
-import uk.gov.hmrc.auth.core.AuthorisedFunctions
+object ConfigKeys {
 
-class DIModule extends AbstractModule {
-  def configure(): Unit = {
-    bind(classOf[AppConfig]).to(classOf[MicroserviceAppConfig]).asEagerSingleton()
-    //bind(classOf[AuthAction]).to(classOf[AuthActionImpl])
-    //bind(classOf[AuthorisedFunctions]).to(classOf[MicroserviceAuthorisedFunctions])
-  }
+  val desServiceBase: String = "des"
+  val setupDesObligationsPath: String = "microservice.services.des.endpoints.vatObligationsUrl"
+  val desEnvironment: String = "microservice.services.des.environment"
+  val desToken: String = "microservice.services.des.authorization-token"
 }

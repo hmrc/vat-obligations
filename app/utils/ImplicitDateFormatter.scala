@@ -14,23 +14,18 @@
  * limitations under the License.
  */
 
-package controllers
+package utils
 
-import play.api.http.Status
-import play.api.test.FakeRequest
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import java.time.format.DateTimeFormatter
+import java.time.{LocalDate, ZonedDateTime}
 
+object ImplicitDateFormatter {
 
-class MicroserviceHelloWorldControllerSpec extends UnitSpec with WithFakeApplication{
+  implicit def toLocalDate(s: String): LocalDate = stringToDate(s).toLocalDate
+  implicit def toZonedDateTime(s: String): ZonedDateTime = stringToDate(s).toZonedDateTime
 
-  val fakeRequest = FakeRequest("GET", "/")
-
-  "GET /" should {
-    "return 200" in {
-      val controller = new MicroserviceHelloWorld()
-      val result = controller.hello()(fakeRequest)
-      status(result) shouldBe Status.OK
-    }
+  implicit class stringToDate(s: String) {
+    def toLocalDate: LocalDate = LocalDate.parse(s, DateTimeFormatter.ofPattern("uuuu-M-d"))
+    def toZonedDateTime: ZonedDateTime = ZonedDateTime.parse(s, DateTimeFormatter.ISO_ZONED_DATE_TIME)
   }
-
 }

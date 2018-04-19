@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-package config
+package audit.models
 
-import auth.MicroserviceAuthorisedFunctions
-import com.google.inject.AbstractModule
-import controllers.actions.{AuthAction, AuthActionImpl}
-import uk.gov.hmrc.auth.core.AuthorisedFunctions
+import play.api.libs.json.{Format, Json}
 
-class DIModule extends AbstractModule {
-  def configure(): Unit = {
-    bind(classOf[AppConfig]).to(classOf[MicroserviceAppConfig]).asEagerSingleton()
-    //bind(classOf[AuthAction]).to(classOf[AuthActionImpl])
-    //bind(classOf[AuthorisedFunctions]).to(classOf[MicroserviceAuthorisedFunctions])
-  }
+/*TODO: I am not sure we need to audit any data we retrieve. Probabbly not as nothing useful?
+ TODO: This code will need tweaking to meet any audit requirments from TXM, or removed if none */
+case class TransactionsAuditModel(incomeSourceType: String,
+                                  referenceNumber: String,
+                                  referenceType: String)
+
+object TransactionsAuditModel {
+  implicit val format: Format[TransactionsAuditModel] = Json.format[TransactionsAuditModel]
 }

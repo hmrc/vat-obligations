@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
-package config
+package models
 
-import auth.MicroserviceAuthorisedFunctions
-import com.google.inject.AbstractModule
-import controllers.actions.{AuthAction, AuthActionImpl}
-import uk.gov.hmrc.auth.core.AuthorisedFunctions
+import play.api.libs.json.{Json, OFormat}
 
-class DIModule extends AbstractModule {
-  def configure(): Unit = {
-    bind(classOf[AppConfig]).to(classOf[MicroserviceAppConfig]).asEagerSingleton()
-    //bind(classOf[AuthAction]).to(classOf[AuthActionImpl])
-    //bind(classOf[AuthorisedFunctions]).to(classOf[MicroserviceAuthorisedFunctions])
-  }
+
+case class Obligations(obligations: Seq[Obligation])
+
+object Obligations {
+  implicit val format: OFormat[Obligations] = Json.format[Obligations]
+}
+
+case class Obligation(start: String, end: String, due: String, status: String,
+                      periodKey : String, received : Option[String] = None)
+
+object Obligation {
+  implicit val format: OFormat[Obligation] = Json.format[Obligation]
 }

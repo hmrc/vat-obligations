@@ -14,19 +14,12 @@
  * limitations under the License.
  */
 
-package controllers
+package utils
 
-import javax.inject.Singleton
+import akka.actor.ActorSystem
+import akka.stream.ActorMaterializer
 
-import uk.gov.hmrc.play.bootstrap.controller.BaseController
-import play.api.mvc._
-
-import scala.concurrent.Future
-
-@Singleton()
-class MicroserviceHelloWorld extends BaseController {
-
-  def hello(): Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok("Hello world"))
-  }
+trait MaterializerSupport {
+  implicit val system: ActorSystem = ActorSystem("Sys")
+  implicit val materializer: ActorMaterializer = ActorMaterializer()
 }

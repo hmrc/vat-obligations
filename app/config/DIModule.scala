@@ -24,7 +24,5 @@ import uk.gov.hmrc.auth.core.AuthorisedFunctions
 class DIModule extends AbstractModule {
   def configure(): Unit = {
     bind(classOf[AppConfig]).to(classOf[MicroserviceAppConfig]).asEagerSingleton()
-    //bind(classOf[AuthAction]).to(classOf[AuthActionImpl])
-    //bind(classOf[AuthorisedFunctions]).to(classOf[MicroserviceAuthorisedFunctions])
   }
 }

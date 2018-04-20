@@ -101,7 +101,6 @@ class VatObligationsControllerSpec extends SpecBase with MockVatObligationsServi
           lazy val result: Result = await(TestVatObligationsController.getVatObligations(badVrn, VatObligationFilters())(fakeRequest))
 
           "return a status of 400 (BAD_REQUEST)" in {
-            //setupMockGetVatObligations(testVrn, VatObligationFilters())(badRequestMultiError)
             status(result) shouldBe Status.BAD_REQUEST
           }
 

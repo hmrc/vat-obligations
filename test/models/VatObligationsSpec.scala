@@ -24,8 +24,7 @@ class VatObligationsSpec extends SpecBase {
   val vatObligationsModel: VatObligations =
     VatObligations(
       Seq(VatObligation(
-        ObligationIdentification("ITSA", "555555555", "VRN"
-        ),
+        ObligationIdentification("555555555", "VRN"),
         Seq(
           ObligationDetail("F", "1980-02-03", "1980-04-05", Some("1980-02-02"), "1980-04-08", "17AA"),
           ObligationDetail("F", "1981-02-03", "1981-04-05", Some("1981-02-02"), "1981-04-08", "18AA")
@@ -38,7 +37,6 @@ class VatObligationsSpec extends SpecBase {
     """{
       |	"obligations": [{
       |		"identification": {
-      |			"incomeSourceType": "ITSA",
       |			"referenceNumber": "555555555",
       |			"referenceType": "VRN"
       |		},

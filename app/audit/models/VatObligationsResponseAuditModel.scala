@@ -27,7 +27,6 @@ case class VatObligationsResponseAuditModel(vrn: String, transactions: VatObliga
     "vrn" -> vrn,
     "response" -> Json.toJson(transactions.obligations.map(transaction =>
       TransactionsAuditModel(
-        incomeSourceType = transaction.identification.incomeSourceType,
         referenceNumber = transaction.identification.referenceNumber,
         referenceType = transaction.identification.referenceType
       )

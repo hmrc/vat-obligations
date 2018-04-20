@@ -33,8 +33,7 @@ class VatObligationsResponseAuditModelSpec extends SpecBase {
       val testTransactions: VatObligations =
         VatObligations(
           Seq(VatObligation(
-            ObligationIdentification("ITSA", "555555555", "VRN"
-            ),
+            ObligationIdentification("555555555", "VRN"),
             Seq(
               ObligationDetail("F", "1980-03-02", "1980-04-04", Some("1980-02-02"), "1980-05-02", "18AA"),
               ObligationDetail("F", "1981-04-02", "1981-05-04", Some("1981-03-02"), "1981-06-02", "19AA")
@@ -54,14 +53,11 @@ class VatObligationsResponseAuditModelSpec extends SpecBase {
       }
 
 
-      TransactionsAuditModel(incomeSourceType = "", referenceNumber = "", referenceType = "")
-
       "Have the correct details for the audit event" in {
         val expected: JsValue = Json.obj(
           "vrn" -> testVrn,
           "response" -> Json.arr(
             Json.toJson(TransactionsAuditModel(
-              incomeSourceType = "ITSA",
               referenceNumber = "555555555",
               referenceType = "VRN"
             )

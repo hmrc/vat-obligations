@@ -30,7 +30,7 @@ object VatObligation {
   implicit val format: OFormat[VatObligation] = Json.format[VatObligation]
 }
 
-case class ObligationIdentification(incomeSourceType: String, referenceNumber: String, referenceType: String)
+case class ObligationIdentification(referenceNumber: String, referenceType: String)
 
 object ObligationIdentification {
   implicit val format: OFormat[ObligationIdentification] = Json.format[ObligationIdentification]

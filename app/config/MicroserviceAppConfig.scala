@@ -21,11 +21,13 @@ import javax.inject.{Inject, Singleton}
 import play.api.Mode.Mode
 import play.api.{Configuration, Environment}
 import uk.gov.hmrc.play.config.ServicesConfig
+import config.{ConfigKeys => Keys}
 
 trait AppConfig extends ServicesConfig {
   val desEnvironment: String
   val desToken: String
-  val desUrl: String
+  val desServiceUrl: String
+  val setupDesObligationsPath: String
 }
 
 @Singleton
@@ -36,7 +38,11 @@ class MicroserviceAppConfig @Inject()(val environment: Environment, val conf: Co
   private def loadConfig(key: String) = runModeConfiguration.getString(key)
     .getOrElse(throw new Exception(s"Missing configuration key: $key"))
 
-  override lazy val desEnvironment: String = loadConfig("microservice.services.des.environment")
-  override lazy val desToken: String = loadConfig("microservice.services.des.authorization-token")
-  override lazy val desUrl: String = loadConfig("microservice.services.des.url")
+  lazy val appName: String = loadConfig("appName")
+
+  override lazy val desEnvironment: String = loadConfig(Keys.desEnvironment)
+  override lazy val desToken: String = loadConfig(Keys.desToken)
+  override lazy val desServiceUrl: String = baseUrl(Keys.desServiceBase)
+  override lazy val setupDesObligationsPath: String = loadConfig(Keys.setupDesObligationsPath)
+
 }

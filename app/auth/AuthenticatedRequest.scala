@@ -14,23 +14,8 @@
  * limitations under the License.
  */
 
-package controllers
+package auth
 
-import play.api.http.Status
-import play.api.test.FakeRequest
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import play.api.mvc.{Request, WrappedRequest}
 
-
-class MicroserviceHelloWorldControllerSpec extends UnitSpec with WithFakeApplication{
-
-  val fakeRequest = FakeRequest("GET", "/")
-
-  "GET /" should {
-    "return 200" in {
-      val controller = new MicroserviceHelloWorld()
-      val result = controller.hello()(fakeRequest)
-      status(result) shouldBe Status.OK
-    }
-  }
-
-}
+case class AuthenticatedRequest[A] (request: Request[A], externalId: String) extends WrappedRequest[A](request)

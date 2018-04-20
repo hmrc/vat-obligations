@@ -16,10 +16,7 @@
 
 package config
 
-import auth.MicroserviceAuthorisedFunctions
 import com.google.inject.AbstractModule
-import controllers.actions.{AuthAction, AuthActionImpl}
-import uk.gov.hmrc.auth.core.AuthorisedFunctions
 
 class DIModule extends AbstractModule {
   def configure(): Unit = {

@@ -22,7 +22,6 @@ import mocks.audit.MockAuditingService
 import mocks.connectors.MockVatObligationsConnector
 import models._
 import play.api.http.Status
-import utils.ImplicitDateFormatter._
 
 class VatObligationsServiceSpec extends SpecBase with MockVatObligationsConnector with MockAuditingService {
 
@@ -48,8 +47,8 @@ class VatObligationsServiceSpec extends SpecBase with MockVatObligationsConnecto
       
       val successResponse: Either[Nothing, VatObligations] = Right(vatObligations)
       val queryParams: VatObligationFilters = VatObligationFilters(
-        from = Some("2017-04-07"),
-        to = Some("2018-04-06"),
+        from = Some(stringToDate("2017-04-07")),
+        to = Some(stringToDate("2018-04-06")),
         status = Some("O")
       )
 
@@ -61,8 +60,8 @@ class VatObligationsServiceSpec extends SpecBase with MockVatObligationsConnecto
       val actual: Either[ErrorResponse, VatObligations] = await(TestVatObligationService.getVatObligations(
         testVrn,
         VatObligationFilters(
-          from = Some("2017-04-07"),
-          to = Some("2018-04-06"),
+          from = Some(stringToDate("2017-04-07")),
+          to = Some(stringToDate("2018-04-06")),
           status = Some("O")
         )
       ))
@@ -75,19 +74,20 @@ class VatObligationsServiceSpec extends SpecBase with MockVatObligationsConnecto
 
     "Return Error when a single error is returned from the Connector" in {
 
-      val singleErrorResponse: Either[ErrorResponse, Nothing] = Left(ErrorResponse(Status.BAD_REQUEST, Error("CODE","MESSAGE")))
+      val singleErrorResponse: Either[ErrorResponse, Nothing] =
+        Left(ErrorResponse(Status.BAD_REQUEST, Error("CODE","MESSAGE")))
 
       setupMockGetVatObligations(testVrn, VatObligationFilters(
-        from = Some("2017-04-06"),
-        to = Some("2018-04-05"),
+        from = Some(stringToDate("2017-04-06")),
+        to = Some(stringToDate("2018-04-05")),
         status = Some("O")
       ))(singleErrorResponse)
 
       val actual: Either[ErrorResponse, VatObligations] = await(TestVatObligationService.getVatObligations(
         testVrn,
         VatObligationFilters(
-          from = Some("2017-04-06"),
-          to = Some("2018-04-05"),
+          from = Some(stringToDate("2017-04-06")),
+          to = Some(stringToDate("2018-04-05")),
           status = Some("O")
         )
       ))
@@ -103,16 +103,16 @@ class VatObligationsServiceSpec extends SpecBase with MockVatObligationsConnecto
       ))))
 
       setupMockGetVatObligations(testVrn, VatObligationFilters(
-        from = Some("2017-04-06"),
-        to = Some("2018-04-05"),
+        from = Some(stringToDate("2017-04-06")),
+        to = Some(stringToDate("2018-04-05")),
         status = Some("O")
       ))(multiErrorResponse)
 
       val actual: Either[ErrorResponse, VatObligations] = await(TestVatObligationService.getVatObligations(
         testVrn,
         VatObligationFilters(
-          from = Some("2017-04-06"),
-          to = Some("2018-04-05"),
+          from = Some(stringToDate("2017-04-06")),
+          to = Some(stringToDate("2018-04-05")),
           status = Some("O")
         )
       ))

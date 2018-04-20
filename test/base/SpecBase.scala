@@ -25,6 +25,8 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.test.UnitSpec
 import utils.MaterializerSupport
 import play.api.http.HeaderNames.REFERER
+import java.time.format.DateTimeFormatter
+import java.time.{LocalDate, ZonedDateTime}
 
 import scala.concurrent.ExecutionContext
 
@@ -38,5 +40,7 @@ trait SpecBase extends UnitSpec with GuiceOneAppPerSuite with MaterializerSuppor
 
   implicit lazy val hc: HeaderCarrier = HeaderCarrier().withExtraHeaders(REFERER -> "/dummy/referer/path")
   implicit lazy val ec: ExecutionContext = injector.instanceOf[ExecutionContext]
+
+  def stringToDate(date: String): LocalDate = {LocalDate.parse(date)}
 
 }

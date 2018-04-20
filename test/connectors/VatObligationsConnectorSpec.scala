@@ -21,7 +21,6 @@ import connectors.httpParsers.VatObligationsHttpParser
 import mocks.MockHttp
 import models._
 import play.api.http.Status
-import utils.ImplicitDateFormatter._
 import models.VatObligationFilters._
 
 import scala.concurrent.Future
@@ -74,8 +73,8 @@ class VatObligationsConnectorSpec extends SpecBase with MockHttp {
           val result: Future[VatObligationsHttpParser.HttpGetResult[VatObligations]] = TestVatObligationsConnector.getVatObligations(
             vrn = testVrn,
             queryParameters = VatObligationFilters(
-              from = Some("2018-04-06"),
-              to = Some("2019-04-05"),
+              from = Some(stringToDate("2018-04-06")),
+              to = Some(stringToDate("2019-04-05")),
               status = Some("F")
             )
           )
@@ -92,7 +91,7 @@ class VatObligationsConnectorSpec extends SpecBase with MockHttp {
           val result: Future[VatObligationsHttpParser.HttpGetResult[VatObligations]] = TestVatObligationsConnector.getVatObligations(
             vrn = testVrn,
             queryParameters = VatObligationFilters(
-              from = Some("2017-04-06")
+              from = Some(stringToDate("2017-04-06"))
             )
           )
           await(result) shouldBe successResponse
@@ -108,7 +107,7 @@ class VatObligationsConnectorSpec extends SpecBase with MockHttp {
           val result: Future[VatObligationsHttpParser.HttpGetResult[VatObligations]] = TestVatObligationsConnector.getVatObligations(
             vrn = testVrn,
             queryParameters = VatObligationFilters(
-              to = Some("2018-04-05")
+              to = Some(stringToDate("2018-04-05"))
             )
           )
           await(result) shouldBe successResponse
@@ -157,8 +156,8 @@ class VatObligationsConnectorSpec extends SpecBase with MockHttp {
           val result: Future[VatObligationsHttpParser.HttpGetResult[VatObligations]] = TestVatObligationsConnector.getVatObligations(
             vrn = testVrn,
             queryParameters = VatObligationFilters(
-              from = Some("2018-04-05"),
-              to = Some("2018-04-18")
+              from = Some(stringToDate("2018-04-05")),
+              to = Some(stringToDate("2018-04-18"))
             )
           )
           await(result) shouldBe successResponse
@@ -175,7 +174,7 @@ class VatObligationsConnectorSpec extends SpecBase with MockHttp {
           val result: Future[VatObligationsHttpParser.HttpGetResult[VatObligations]] = TestVatObligationsConnector.getVatObligations(
             vrn = testVrn,
             queryParameters = VatObligationFilters(
-              to = Some("2018-04-05"),
+              to = Some(stringToDate("2018-04-05")),
               status = Some("O")
             )
           )

@@ -59,8 +59,11 @@ object VatObligationsBinders {
       }
 
       private[binders] def statusBind(key: String, params: Map[String, Seq[String]]) = params.get(key) match {
-        case Some(values) => if (values.head == "F" || values.head == "O") Right(Some(values.head)) else
-          Left(s"Failed to bind '$key=${values.head}' valid values are 'F' or 'O'.")
+        case Some(values) =>
+          values.head match {
+            case data if data.matches("^[F,O]{1}$") => Right(Some(values.head))
+            case _ => Left(s"Failed to bind '$key=${values.head}' valid values are 'F' or 'O'.")
+          }
         case _ => Right(None)
       }
     }

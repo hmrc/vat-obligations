@@ -20,7 +20,7 @@ import javax.inject.{Inject, Singleton}
 
 import models.Error
 import play.api.http.HttpErrorHandler
-import play.api.http.Status.{BAD_REQUEST, INTERNAL_SERVER_ERROR, NOT_FOUND}
+import play.api.http.Status.{INTERNAL_SERVER_ERROR}
 import play.api.libs.json.Json
 import play.api.mvc.Results._
 import play.api.mvc.{RequestHeader, Result}
@@ -45,7 +45,7 @@ class ErrorHandler @Inject()(val configuration: Configuration, auditConnector: A
 
   override def onClientError(request: RequestHeader, statusCode: Int, message: String): Future[Result] = {
 
-    implicit val headerCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
+    implicit val headerCarrier: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
 
     statusCode match {
       case play.mvc.Http.Status.NOT_FOUND =>
@@ -61,14 +61,14 @@ class ErrorHandler @Inject()(val configuration: Configuration, auditConnector: A
   }
 
   override def onServerError(request: RequestHeader, ex: Throwable): Future[Result] = {
-    implicit val headerCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
+    implicit val headerCarrier: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
 
     Logger.error(s"! Internal server error, for (${request.method}) [${request.uri}] -> ", ex)
 
     val code = ex match {
-      case e: NotFoundException => "ResourceNotFound"
-      case e: AuthorisationException => "ClientError"
-      case jsError: JsValidationException => "ServerValidationError"
+      case _: NotFoundException => "ResourceNotFound"
+      case _: AuthorisationException => "ClientError"
+      case _: JsValidationException => "ServerValidationError"
       case _ => "ServerInternalError"
     }
 

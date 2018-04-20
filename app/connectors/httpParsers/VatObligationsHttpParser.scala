@@ -18,7 +18,7 @@ package connectors.httpParsers
 
 import models.{UnexpectedJsonFormat, UnexpectedResponse, VatObligations}
 import play.api.Logger
-import play.api.http.Status.{BAD_REQUEST, OK}
+import play.api.http.Status.OK
 import uk.gov.hmrc.http.{HttpReads, HttpResponse}
 
 object VatObligationsHttpParser extends ResponseHttpParsers {

@@ -18,7 +18,6 @@ package appRoutes
 
 import base.SpecBase
 import models.VatObligationFilters
-import utils.ImplicitDateFormatter._
 
 class AppRoutesSpec extends SpecBase {
 
@@ -41,7 +40,7 @@ class AppRoutesSpec extends SpecBase {
 
       "'from' query parameter is supplied" should {
 
-        lazy val queryParams: VatObligationFilters = VatObligationFilters(Some("2018-02-01"))
+        lazy val queryParams: VatObligationFilters = VatObligationFilters(Some(stringToDate("2018-02-01")))
 
         val expected = "/vat-obligations/555555555/obligations?from=2018-02-01"
 
@@ -53,7 +52,8 @@ class AppRoutesSpec extends SpecBase {
 
       "'from, to' query parameters are supplied" should {
 
-        lazy val queryParams: VatObligationFilters = VatObligationFilters(Some("2018-02-01"), Some("2019-03-01"))
+        lazy val queryParams: VatObligationFilters = VatObligationFilters(
+          Some(stringToDate("2018-02-01")), Some(stringToDate("2019-03-01")))
 
         val expected: String = "/vat-obligations/555555555/obligations?from=2018-02-01&to=2019-03-01"
 
@@ -66,8 +66,8 @@ class AppRoutesSpec extends SpecBase {
       "all query parameters are supplied ('from, to, status')" should {
 
         lazy val queryParams: VatObligationFilters = VatObligationFilters(
-          from = Some("2018-02-01"),
-          to = Some("2019-03-01"),
+          from = Some(stringToDate("2018-02-01")),
+          to = Some(stringToDate("2019-03-01")),
           status = Some("F")
         )
 

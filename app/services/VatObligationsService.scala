@@ -37,7 +37,7 @@ class VatObligationsService @Inject()(val vatObligationsConnector: VatObligation
     Logger.debug(s"[VatObligationsService][getVatObligations] Auditing Vat Obligations request")
     auditingService.audit(VatObligationsRequestAuditModel(vrn, queryParameters))
 
-    Logger.debug(s"[VatObligationsService][getVatObligations] Calling fvatObligationsConnector with Vrn: $vrn\nParams: $queryParameters")
+    Logger.debug(s"[VatObligationsService][getVatObligations] Calling vatObligationsConnector with Vrn: $vrn\nParams: $queryParameters")
     vatObligationsConnector.getVatObligations(vrn, queryParameters).map {
       case success@Right(vatObligations) =>
         Logger.debug(s"[VatObligationsService][getVatObligations] Auditing Vat Obligations response")

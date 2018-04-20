@@ -18,7 +18,6 @@ package binders
 
 import base.SpecBase
 import models.VatObligationFilters
-import utils.ImplicitDateFormatter._
 import VatObligationFilters._
 
 class VatObligationsBindersSpec extends SpecBase {
@@ -46,8 +45,10 @@ class VatObligationsBindersSpec extends SpecBase {
 
         "return an VatObligationFilters instance with correct parameters" in {
 
-          val expected: Option[Right[Nothing, VatObligationFilters]] = Some(Right(VatObligationFilters(Some("2018-01-01"))))
-          val actual: Option[Either[String, VatObligationFilters]] = VatObligationsBinders.vatObligationsQueryBinder.bind("", queryParams)
+          val expected: Option[Right[Nothing, VatObligationFilters]] = Some(Right(VatObligationFilters(
+            Some(stringToDate("2018-01-01")))))
+          val actual: Option[Either[String, VatObligationFilters]] =
+            VatObligationsBinders.vatObligationsQueryBinder.bind("", queryParams)
 
           actual shouldBe expected
         }
@@ -59,8 +60,10 @@ class VatObligationsBindersSpec extends SpecBase {
 
         "return a bad request error message with details of the error" in {
 
-          val expected: Option[Left[String, Nothing]] = Some(Left(s"Failed to bind '$dateFromKey=NoDate' valid date format should be 'YYYY-MM-DD'."))
-          val actual: Option[Either[String, VatObligationFilters]] = VatObligationsBinders.vatObligationsQueryBinder.bind("", queryParams)
+          val expected: Option[Left[String, Nothing]] =
+            Some(Left(s"Failed to bind '$dateFromKey=NoDate' valid date format should be 'YYYY-MM-DD'."))
+          val actual: Option[Either[String, VatObligationFilters]] =
+            VatObligationsBinders.vatObligationsQueryBinder.bind("", queryParams)
 
           actual shouldBe expected
         }
@@ -75,8 +78,10 @@ class VatObligationsBindersSpec extends SpecBase {
 
         "return an VatObligationFilters instance with correct parameters" in {
 
-          val expected: Option[Right[Nothing, VatObligationFilters]] = Some(Right(VatObligationFilters(None, Some("2018-01-01"))))
-          val actual: Option[Either[String, VatObligationFilters]] = VatObligationsBinders.vatObligationsQueryBinder.bind("", queryParams)
+          val expected: Option[Right[Nothing, VatObligationFilters]] =
+            Some(Right(VatObligationFilters(None, Some(stringToDate("2018-01-01")))))
+          val actual: Option[Either[String, VatObligationFilters]] =
+            VatObligationsBinders.vatObligationsQueryBinder.bind("", queryParams)
 
           actual shouldBe expected
         }
@@ -88,8 +93,10 @@ class VatObligationsBindersSpec extends SpecBase {
 
         "return a bad request error message with details of the error" in {
 
-          val expected: Option[Left[String, Nothing]] = Some(Left(s"Failed to bind '$dateToKey=NoDate' valid date format should be 'YYYY-MM-DD'."))
-          val actual: Option[Either[String, VatObligationFilters]] = VatObligationsBinders.vatObligationsQueryBinder.bind("", queryParams)
+          val expected: Option[Left[String, Nothing]] =
+            Some(Left(s"Failed to bind '$dateToKey=NoDate' valid date format should be 'YYYY-MM-DD'."))
+          val actual: Option[Either[String, VatObligationFilters]] =
+            VatObligationsBinders.vatObligationsQueryBinder.bind("", queryParams)
 
           actual shouldBe expected
         }
@@ -105,8 +112,10 @@ class VatObligationsBindersSpec extends SpecBase {
 
         "return an VatObligationFilters instance with correct parameters" in {
 
-          val expected: Option[Right[Nothing, VatObligationFilters]] = Some(Right(VatObligationFilters(None, None, Some("F"))))
-          val actual: Option[Either[String, VatObligationFilters]] = VatObligationsBinders.vatObligationsQueryBinder.bind("", queryParams)
+          val expected: Option[Right[Nothing, VatObligationFilters]] =
+            Some(Right(VatObligationFilters(None, None, Some("F"))))
+          val actual: Option[Either[String, VatObligationFilters]] =
+            VatObligationsBinders.vatObligationsQueryBinder.bind("", queryParams)
 
           actual shouldBe expected
         }
@@ -118,8 +127,10 @@ class VatObligationsBindersSpec extends SpecBase {
 
         "return an VatObligationFilters instance with correct parameters" in {
 
-          val expected: Option[Right[Nothing, VatObligationFilters]] = Some(Right(VatObligationFilters(None, None, Some("O"))))
-          val actual: Option[Either[String, VatObligationFilters]] = VatObligationsBinders.vatObligationsQueryBinder.bind("", queryParams)
+          val expected: Option[Right[Nothing, VatObligationFilters]] =
+            Some(Right(VatObligationFilters(None, None, Some("O"))))
+          val actual: Option[Either[String, VatObligationFilters]] =
+            VatObligationsBinders.vatObligationsQueryBinder.bind("", queryParams)
 
           actual shouldBe expected
         }
@@ -131,8 +142,10 @@ class VatObligationsBindersSpec extends SpecBase {
 
         "return a bad request error message with details of the error" in {
 
-          val expected: Option[Left[String, Nothing]] = Some(Left(s"Failed to bind '$statusKey=Z' valid values are 'F' or 'O'."))
-          val actual: Option[Either[String, VatObligationFilters]] = VatObligationsBinders.vatObligationsQueryBinder.bind("", queryParams)
+          val expected: Option[Left[String, Nothing]] =
+            Some(Left(s"Failed to bind '$statusKey=Z' valid values are 'F' or 'O'."))
+          val actual: Option[Either[String, VatObligationFilters]] =
+            VatObligationsBinders.vatObligationsQueryBinder.bind("", queryParams)
 
           actual shouldBe expected
         }
@@ -153,8 +166,8 @@ class VatObligationsBindersSpec extends SpecBase {
         "return an VatObligationFilters instance with correct parameters" in {
 
           val expected: Option[Right[Nothing, VatObligationFilters]] = Some(Right(VatObligationFilters(
-            from = Some("2018-01-01"),
-            to = Some("2018-01-01"),
+            from = Some(stringToDate("2018-01-01")),
+            to = Some(stringToDate("2018-01-01")),
             status = Some("F")
           )))
 

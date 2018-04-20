@@ -37,6 +37,8 @@ class VatObligationsController @Inject()(val authenticate: AuthAction,
     authenticate.async {
       implicit authorisedUser =>
         if (isInvalidVrn(vrn)) {
+          val x =1
+          val y = if (x == 1) 2 else 1
           Logger.warn(s"[VatObligationsController][getVatObligations] Invalid Vrn '$vrn' received in request.")
           Future.successful(BadRequest(Json.toJson(InvalidVrn)))
         } else {

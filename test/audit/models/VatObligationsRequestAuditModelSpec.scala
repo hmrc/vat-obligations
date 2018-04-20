@@ -19,7 +19,6 @@ package audit.models
 import _root_.models._
 import base.SpecBase
 import models.VatObligationFilters.{dateFromKey, dateToKey, statusKey}
-import utils.ImplicitDateFormatter._
 
 class VatObligationsRequestAuditModelSpec extends SpecBase {
 
@@ -32,8 +31,8 @@ class VatObligationsRequestAuditModelSpec extends SpecBase {
     "all QueryParameters are passed to it" should {
 
       val testQueryParams: VatObligationFilters = VatObligationFilters(
-        from = Some("2018-01-01"),
-        to = Some("2019-01-01"),
+        from = Some(stringToDate("2018-01-01")),
+        to = Some(stringToDate("2019-01-01")),
         status = Some("F")
       )
       object TestVatObligationsRequestAuditModel extends VatObligationsRequestAuditModel(testVrn, testQueryParams)

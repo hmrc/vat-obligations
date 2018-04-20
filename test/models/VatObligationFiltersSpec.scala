@@ -17,7 +17,6 @@
 package models
 
 import base.SpecBase
-import utils.ImplicitDateFormatter._
 import VatObligationFilters._
 
 class VatObligationFiltersSpec extends SpecBase {
@@ -47,12 +46,12 @@ class VatObligationFiltersSpec extends SpecBase {
       }
 
       "for from Query Param, has a 'dateFrom' param with correct value" in {
-        val queryParams: VatObligationFilters = VatObligationFilters(from = Some("2018-04-06"))
+        val queryParams: VatObligationFilters = VatObligationFilters(from = Some(stringToDate("2018-04-06")))
         queryParams.toSeqQueryParams shouldBe Seq(dateFromKey -> "2018-04-06")
       }
 
       "for to Query Param, has a 'dateTo' param with correct value" in {
-        val queryParams: VatObligationFilters = VatObligationFilters(to = Some("2019-04-05"))
+        val queryParams: VatObligationFilters = VatObligationFilters(to = Some(stringToDate("2019-04-05")))
         queryParams.toSeqQueryParams shouldBe Seq(dateToKey -> "2019-04-05")
       }
 
@@ -63,8 +62,8 @@ class VatObligationFiltersSpec extends SpecBase {
 
       "for all Query Params, outputs them all as expected" in {
         val queryParams: VatObligationFilters = VatObligationFilters(
-          from = Some("2017-04-06"),
-          to = Some("2018-04-05"),
+          from = Some(stringToDate("2017-04-06")),
+          to = Some(stringToDate("2018-04-05")),
           status = Some("F")
         )
         queryParams.toSeqQueryParams shouldBe Seq(

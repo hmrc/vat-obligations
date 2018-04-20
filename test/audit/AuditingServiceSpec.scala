@@ -19,7 +19,7 @@ package audit
 import audit.models.{AuditModel, ExtendedAuditModel}
 import base.SpecBase
 import mocks.audit.MockAuditingConnector
-import play.api.libs.json.{JsObject, JsValue, Json}
+import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.play.audit.AuditExtensions
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.{Disabled, Failure, Success}
 import uk.gov.hmrc.play.audit.model.{DataEvent, ExtendedDataEvent}
@@ -111,7 +111,8 @@ class AuditingServiceSpec extends SpecBase with MockAuditingConnector {
       )
     }
 
-    lazy val testAuditData: ExtendedDataEvent = TestAuditingService.toDataEvent(mockAppConfig.appName, TestExtendedAuditModel, "/dummy/referer/path")
+    lazy val testAuditData: ExtendedDataEvent = TestAuditingService.toDataEvent(mockAppConfig.appName,
+      TestExtendedAuditModel, "/dummy/referer/path")
 
     "AuditingService.toDataEvent(x: ExtendedDataEvent) method" should {
 
@@ -126,7 +127,8 @@ class AuditingServiceSpec extends SpecBase with MockAuditingConnector {
         }
 
         "has the correct audit tags" in {
-          testAuditData.tags shouldBe AuditExtensions.auditHeaderCarrier(hc).toAuditTags(TestExtendedAuditModel.transactionName, "/dummy/referer/path")
+          testAuditData.tags shouldBe AuditExtensions.auditHeaderCarrier(hc).toAuditTags(TestExtendedAuditModel.transactionName,
+            "/dummy/referer/path")
         }
 
         "has the correct audit detail" in {

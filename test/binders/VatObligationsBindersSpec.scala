@@ -36,7 +36,6 @@ class VatObligationsBindersSpec extends SpecBase {
 
         actual shouldBe expected
       }
-
     }
 
     "If a dateFrom query parameter is passed" which {
@@ -66,7 +65,6 @@ class VatObligationsBindersSpec extends SpecBase {
           actual shouldBe expected
         }
       }
-
     }
 
     "If a dateTo query parameter is passed" which {
@@ -139,7 +137,6 @@ class VatObligationsBindersSpec extends SpecBase {
           actual shouldBe expected
         }
       }
-
     }
 
 

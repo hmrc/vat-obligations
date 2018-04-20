@@ -69,7 +69,6 @@ class VatObligationsController @Inject()(val authenticate: AuthAction,
       }
       Obligations(found)
     }
-
   }
 
   private def isInvalidVrn(vrn: String): Boolean = {

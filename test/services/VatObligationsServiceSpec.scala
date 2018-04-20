@@ -26,7 +26,6 @@ import utils.ImplicitDateFormatter._
 
 class VatObligationsServiceSpec extends SpecBase with MockVatObligationsConnector with MockAuditingService {
 
-
   object TestVatObligationService extends VatObligationsService(mockVatObligationsConnector, mockAuditingService)
 
   lazy val testVrn = "555555555"
@@ -73,7 +72,6 @@ class VatObligationsServiceSpec extends SpecBase with MockVatObligationsConnecto
 
       verifyAuditEvent(VatObligationsRequestAuditModel(testVrn, queryParams))
       verifyAuditEvent(VatObligationsResponseAuditModel(testVrn, vatObligations))
-
     }
 
     "Return Error when a single error is returned from the Connector" in {
@@ -96,7 +94,6 @@ class VatObligationsServiceSpec extends SpecBase with MockVatObligationsConnecto
       ))
 
       actual shouldBe singleErrorResponse
-
     }
 
     "Return a MultiError when multiple error responses are returned from the Connector" in {
@@ -122,7 +119,7 @@ class VatObligationsServiceSpec extends SpecBase with MockVatObligationsConnecto
       ))
 
       actual shouldBe multiErrorResponse
-
     }
+
   }
 }

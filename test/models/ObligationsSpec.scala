@@ -61,7 +61,6 @@ class ObligationsSpec extends SpecBase {
     "deserialize to a Transaction model successfully" in {
       obligationsJson.as[Obligations] shouldBe obligationsModel
     }
-
   }
 
 }

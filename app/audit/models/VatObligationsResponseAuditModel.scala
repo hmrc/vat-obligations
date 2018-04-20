@@ -19,9 +19,7 @@ package audit.models
 import models.VatObligations
 import play.api.libs.json.{JsValue, Json}
 
-/*TODO: I am not sure we need to audit any data we retrieve. Probabbly not as nothing useful?
- TODO: This code will need tweaking to meet any audit requirments from TXM, or removed if none */
-
+// TODO: This code will need tweaking to match audit requirments from TXM or otherwise, or removed if none.
 case class VatObligationsResponseAuditModel(vrn: String, transactions: VatObligations) extends ExtendedAuditModel {
   override val transactionName: String = "vat-obligations-response"
   override val auditType: String = "vatObligationsResponse"

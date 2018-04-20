@@ -18,8 +18,7 @@ package audit.models
 
 import play.api.libs.json.{Format, Json}
 
-/*TODO: I am not sure we need to audit any data we retrieve. Probabbly not as nothing useful?
- TODO: This code will need tweaking to meet any audit requirments from TXM, or removed if none */
+// TODO: This code will need tweaking to match audit requirements from TXM or otherwise, or removed if none.
 case class TransactionsAuditModel(incomeSourceType: String,
                                   referenceNumber: String,
                                   referenceType: String)

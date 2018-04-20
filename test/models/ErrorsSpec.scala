@@ -63,7 +63,6 @@ class ErrorsSpec extends SpecBase {
     "Deserialize to a MultiError as expected" in {
       desMultiErrorJson.as[MultiError] shouldBe desMultiErrorModel
     }
-
   }
 
   "The UnexpectedResponse object" should {
@@ -77,7 +76,6 @@ class ErrorsSpec extends SpecBase {
         code = "UNEXPECTED_DOWNSTREAM_ERROR",
         message = "The downstream service responded with an unexpected response.")
     }
-
   }
 
   "The InvalidJsonResponse object" should {
@@ -105,7 +103,6 @@ class ErrorsSpec extends SpecBase {
         code = "UNEXPECTED_JSON_FORMAT",
         message = "The downstream service responded with json which did not match the expected format.")
     }
-
   }
 
   "The InvalidVrn object" should {

@@ -27,7 +27,6 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
 
-
 trait MockHttp extends UnitSpec with MockitoSugar with BeforeAndAfterEach {
 
   val mockHttpGet: HttpClient = mock[HttpClient]

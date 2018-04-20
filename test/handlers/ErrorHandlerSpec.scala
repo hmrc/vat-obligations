@@ -47,7 +47,6 @@ class ErrorHandlerSpec extends SpecBase {
           jsonBodyOf(result) shouldBe Json.toJson(Error("NOT_FOUND", s"URI '${request.path}' not found"))
         }
       }
-
     }
 
     "called with a BAD_REQUEST (400) error" should {
@@ -65,7 +64,6 @@ class ErrorHandlerSpec extends SpecBase {
           jsonBodyOf(result) shouldBe Json.toJson(Error("BAD_REQUEST", s"Bad Request. Message: 'Invalid Banana'"))
         }
       }
-
     }
 
     "called with any other error client error (e.g. PRECONDITION_FAILED)" should {
@@ -104,7 +102,6 @@ class ErrorHandlerSpec extends SpecBase {
           jsonBodyOf(result) shouldBe Json.toJson(Error(Status.NOT_FOUND.toString, s"Not Found Error"))
         }
       }
-
     }
 
     "triggered by a Authorisation exception (e.g. BearerTokenExpired)" should {
@@ -123,7 +120,6 @@ class ErrorHandlerSpec extends SpecBase {
           jsonBodyOf(result) shouldBe Json.toJson(Error(Status.UNAUTHORIZED.toString, s"Bearer token expired"))
         }
       }
-
     }
 
     "triggered by a JsonValidation exception" should {
@@ -143,7 +139,6 @@ class ErrorHandlerSpec extends SpecBase {
             "method of '/url' returned invalid json. Attempting to convert to models.VatObligations$ gave errors: errors"))
         }
       }
-
     }
 
     "triggered by a RunTime exception" should {
@@ -162,7 +157,6 @@ class ErrorHandlerSpec extends SpecBase {
           jsonBodyOf(result) shouldBe Json.toJson(Error(Status.INTERNAL_SERVER_ERROR.toString, s"Runtime Error"))
         }
       }
-
     }
 
     "triggered by an Upstream4xxResponse exception" should {
@@ -181,7 +175,6 @@ class ErrorHandlerSpec extends SpecBase {
           jsonBodyOf(result) shouldBe Json.toJson(Error(Status.BAD_REQUEST.toString, "Upstream  400 Error"))
         }
       }
-
     }
 
     "triggered by an Upstream5xxResponse exception" should {
@@ -200,9 +193,7 @@ class ErrorHandlerSpec extends SpecBase {
           jsonBodyOf(result) shouldBe Json.toJson(Error(Status.INTERNAL_SERVER_ERROR.toString, "Upstream  500 Error"))
         }
       }
-
     }
-
 
   }
 }

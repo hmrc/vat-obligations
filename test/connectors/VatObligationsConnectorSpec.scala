@@ -116,7 +116,6 @@ class VatObligationsConnectorSpec extends SpecBase with MockHttp {
         }
       }
 
-
       "calling for a user with just a status (F) Query Parameter and a success response received" should {
 
         "return a VatObligations model" in {
@@ -196,7 +195,6 @@ class VatObligationsConnectorSpec extends SpecBase with MockHttp {
           await(result) shouldBe successResponse
         }
       }
-
     }
 
     "calling for a user with non-success response received, single error" should {

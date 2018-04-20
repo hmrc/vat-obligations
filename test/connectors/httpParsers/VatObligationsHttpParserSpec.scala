@@ -80,7 +80,6 @@ class VatObligationsHttpParserSpec extends SpecBase {
       "return a VatObligations instance" in {
         result shouldEqual expected
       }
-
     }
 
     "the http response status is 200 OK but the response is not as expected" should {
@@ -94,7 +93,6 @@ class VatObligationsHttpParserSpec extends SpecBase {
       "return an UnexpectedJsonFormat instance" in {
         result shouldEqual expected
       }
-
     }
 
     "the http response status is 400 BAD_REQUEST (single error)" should {
@@ -119,7 +117,6 @@ class VatObligationsHttpParserSpec extends SpecBase {
       "return a Error instance" in {
         result shouldEqual expected
       }
-
     }
 
     "the http response status is 400 BAD_REQUEST (multiple errors)" should {
@@ -207,7 +204,6 @@ class VatObligationsHttpParserSpec extends SpecBase {
       "return an Internal Server Error" in {
         result shouldEqual expected
       }
-
     }
 
     "the http response status is unexpected" should {
@@ -221,7 +217,6 @@ class VatObligationsHttpParserSpec extends SpecBase {
       "return an Internal Server Error" in {
         result shouldEqual expected
       }
-
     }
 
   }

@@ -70,5 +70,4 @@ trait MockAuditingService extends UnitSpec with MockitoSugar with BeforeAndAfter
       ArgumentMatchers.any[HeaderCarrier],
       ArgumentMatchers.any[ExecutionContext]
     )
-
 }

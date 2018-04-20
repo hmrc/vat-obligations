@@ -78,7 +78,6 @@ class AppRoutesSpec extends SpecBase {
           route shouldBe expected
         }
       }
-
     }
   }
 }

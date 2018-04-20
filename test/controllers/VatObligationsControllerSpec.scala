@@ -79,7 +79,6 @@ class VatObligationsControllerSpec extends SpecBase with MockVatObligationsServi
           "return a json body with the transformed des obligation data" in {
             jsonBodyOf(result) shouldBe Json.toJson(transformedSuccessData)
           }
-
         }
 
         "for a bad request with single error from the VatObligationsService" should {

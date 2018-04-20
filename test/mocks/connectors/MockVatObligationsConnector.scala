@@ -28,7 +28,6 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
 
-
 trait MockVatObligationsConnector extends UnitSpec with MockitoSugar with BeforeAndAfterEach {
 
   val mockVatObligationsConnector: VatObligationsConnector = mock[VatObligationsConnector]

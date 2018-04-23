@@ -31,7 +31,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class VatObligationsConnector @Inject()(val http: HttpClient, val appConfig: MicroserviceAppConfig) {
 
   private[connectors] def setupDesVatObligationsUrl(vrn: String): String = appConfig.desServiceUrl +
-    appConfig.setupDesObligationsPath.replace("[vrn]", vrn)
+    appConfig.setupDesObligationsStartPath + vrn + appConfig.setupDesObligationsEndPath
 
   def getVatObligations(vrn: String, queryParameters: VatObligationFilters)
                        (implicit headerCarrier: HeaderCarrier, ec: ExecutionContext): Future[HttpGetResult[VatObligations]] = {

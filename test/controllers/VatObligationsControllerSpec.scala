@@ -38,6 +38,19 @@ class VatObligationsControllerSpec extends SpecBase with MockVatObligationsServi
       )
       ))
 
+  val successEmptyDetail: VatObligations =
+    VatObligations(
+      Seq(VatObligation(
+        ObligationIdentification("555555555", "VRN"),
+        Seq.empty[ObligationDetail]
+      )
+      ))
+
+  val successEmptyObligations: VatObligations =
+    VatObligations(
+      Seq.empty[VatObligation]
+    )
+
   val transformedSuccessData: Obligations = Obligations(Seq(
     Obligation("1980-02-03", "1980-04-05", "1980-04-08", "F", "17AA", Some("1980-02-02")),
     Obligation("1981-02-03", "1981-04-05", "1981-04-08", "F", "18AA", Some("1981-02-02")))
@@ -53,6 +66,8 @@ class VatObligationsControllerSpec extends SpecBase with MockVatObligationsServi
   )
 
   val successResponse: Either[Nothing, VatObligations] = Right(success)
+  val successResponseEmptyDetail: Either[Nothing, VatObligations] = Right(successEmptyDetail)
+  val successResponseEmptyObligations: Either[Nothing, VatObligations] = Right(successEmptyObligations)
   val badRequestSingleError: Either[ErrorResponse, Nothing] = Left(ErrorResponse(Status.BAD_REQUEST, singleError))
   val badRequestMultiError: Either[ErrorResponse, Nothing] = Left(ErrorResponse(Status.BAD_REQUEST, multiError))
   val testVrn: String = "555555555"
@@ -92,6 +107,27 @@ class VatObligationsControllerSpec extends SpecBase with MockVatObligationsServi
           "return a json body with the single error message" in {
 
             jsonBodyOf(result) shouldBe Json.toJson(singleError)
+          }
+        }
+
+        "for a result with an empty ObligationDetail sequence" should {
+
+          lazy val result: Result = await(TestVatObligationsController.getVatObligations(testVrn, VatObligationFilters())(fakeRequest))
+
+          "return a status of 404 (NotFound)" in {
+            setupMockGetVatObligations(testVrn, VatObligationFilters())(successResponseEmptyDetail)
+            status(result) shouldBe Status.NOT_FOUND
+          }
+
+        }
+
+        "for a result with an empty VatObligation sequence" should {
+
+          lazy val result: Result = await(TestVatObligationsController.getVatObligations(testVrn, VatObligationFilters())(fakeRequest))
+
+          "return a status of 404 (NotFound)" in {
+            setupMockGetVatObligations(testVrn, VatObligationFilters())(successResponseEmptyObligations)
+            status(result) shouldBe Status.NOT_FOUND
           }
         }
 

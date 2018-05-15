@@ -40,7 +40,7 @@ class AuditingServiceSpec extends SpecBase with MockAuditingConnector {
     }
 
     lazy val testAuditData: DataEvent =
-      TestAuditingService.toDataEvent(mockAppConfig.appName, TestAuditModel,"/dummy/referer/path")
+      TestAuditingService.toDataEvent(mockAppConfig.appName, TestAuditModel,"/dummy/referrer/path")
 
     "AuditingService.toDataEvent(x: DataEvent) method" should {
 
@@ -56,7 +56,7 @@ class AuditingServiceSpec extends SpecBase with MockAuditingConnector {
 
         "has the correct audit tags" in {
           testAuditData.tags shouldBe AuditExtensions.auditHeaderCarrier(hc).toAuditTags(TestAuditModel.transactionName,
-            "/dummy/referer/path")
+            "/dummy/referrer/path")
         }
 
         "has the correct audit detail" in {
@@ -112,7 +112,7 @@ class AuditingServiceSpec extends SpecBase with MockAuditingConnector {
     }
 
     lazy val testAuditData: ExtendedDataEvent = TestAuditingService.toDataEvent(mockAppConfig.appName,
-      TestExtendedAuditModel, "/dummy/referer/path")
+      TestExtendedAuditModel, "/dummy/referrer/path")
 
     "AuditingService.toDataEvent(x: ExtendedDataEvent) method" should {
 
@@ -128,7 +128,7 @@ class AuditingServiceSpec extends SpecBase with MockAuditingConnector {
 
         "has the correct audit tags" in {
           testAuditData.tags shouldBe AuditExtensions.auditHeaderCarrier(hc).toAuditTags(TestExtendedAuditModel.transactionName,
-            "/dummy/referer/path")
+            "/dummy/referrer/path")
         }
 
         "has the correct audit detail" in {

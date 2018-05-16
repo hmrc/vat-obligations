@@ -19,7 +19,7 @@ package audit.models
 import models._
 import models.VatObligationFilters._
 
-// TODO: This code will need tweaking to match audit requirments from TXM or otherwise, or removed if none.
+// TODO: This code will need tweaking to match audit requirements from TXM or otherwise, or removed if none.
 case class VatObligationsRequestAuditModel(vrn: String, queryParams: VatObligationFilters) extends AuditModel {
 
   override val transactionName: String = "vat-obligations-request"

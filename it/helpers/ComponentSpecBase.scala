@@ -71,14 +71,4 @@ trait ComponentSpecBase extends TestSuite with CustomMatchers
     def getVatObligations(vrn: String, queryParameters: VatObligationFilters): WSResponse =
       get(s"/vat-obligations/$vrn/obligations${VatObligationsBinders.vatObligationsQueryBinder.unbind("", queryParameters)}")
   }
-
-  def isAuthorised(authorised: Boolean = true): StubMapping = {
-    if (authorised) {
-      Given("I wiremock stub an authorised user response")
-      AuthStub.stubAuthorised()
-    } else {
-      Given("I wiremock stub an unauthorised user response")
-      AuthStub.stubUnauthorised()
-    }
-  }
 }

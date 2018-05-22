@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 HM Revenue & Customs
+ * Copyright 2018 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,113 +17,74 @@
 package controllers
 
 import helpers.ComponentSpecBase
-import helpers.servicemocks.DesVatObligationsStub
+import helpers.servicemocks.{AuthStub, DesVatObligationsStub}
 import models._
 import play.api.http.Status._
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.WSResponse
 import testData.ObligationData
 
 class VatObligationsComponentSpec extends ComponentSpecBase {
 
+  lazy val vrn: String = "555555555"
+
+  def getStubResponse(responseStatus: Integer, responseJson: JsValue, authorised: Boolean = true): WSResponse = {
+    if(authorised) AuthStub.stubAuthorised() else AuthStub.stubUnauthorised()
+    val queryParameters: VatObligationFilters = VatObligationFilters()
+    DesVatObligationsStub.stubGetVatObligations(vrn, queryParameters)(responseStatus, responseJson)
+    val response = VatObligationsComponent.getVatObligations(vrn, queryParameters)
+    DesVatObligationsStub.verifyGetVatObligations(vrn, queryParameters)
+    response
+  }
+
   "Sending a request to /vat-obligations/:vrn/obligations  (VatObligationsController)" when {
 
-    "Requesting Vat Obligations" should {
+    "a user is authorised with a valid request with no query parameters and a success response" should {
 
-      lazy val vrn: String = "555555555"
-
-      "be authorised with a valid request with no query parameters and a success response" should {
-
-        lazy val queryParameters: VatObligationFilters = VatObligationFilters()
-
-        "return a success response" in {
-
-          isAuthorised()
-
-          And("When wiremock stubbing a successful Get Vat Obligations Data response")
-          DesVatObligationsStub.stubGetVatObligations(vrn, queryParameters)(OK,
-            Json.toJson(ObligationData.successResponse))
-
-          When(s"Calling GET /vat-obligations/$vrn/obligations")
-          val res: WSResponse = VatObligationsComponent.getVatObligations("555555555", queryParameters)
-
-          DesVatObligationsStub.verifyGetVatObligations(vrn, queryParameters)
-
-          Then("a successful response is returned with the correct transformed vat obligations")
-          res should have(
-            httpStatus(OK),
-            jsonBodyAs[Obligations](ObligationData.transformedSuccessResponse)
-          )
-        }
+      "return a status of 200 (OK)" in {
+        val response: WSResponse = getStubResponse(OK, Json.toJson(ObligationData.successResponse))
+        response.status shouldBe 200
       }
 
-      "authorised with a valid request with no query parameters and an error response" should {
-
-        lazy val queryParameters: VatObligationFilters = VatObligationFilters()
-
-        "return a single error response" in {
-
-          isAuthorised()
-
-          And("When wiremock stubbing a successful Get Vat Obligations Data response")
-          DesVatObligationsStub.stubGetVatObligations(vrn, queryParameters)(BAD_REQUEST,
-            Json.toJson(ObligationData.singleErrorResponse))
-
-          When(s"Calling GET /vat-obligations/$vrn/obligations")
-          val res: WSResponse = VatObligationsComponent.getVatObligations(vrn, queryParameters)
-
-          DesVatObligationsStub.verifyGetVatObligations(vrn, queryParameters)
-
-          Then("the correct single error response is returned")
-
-          res should have(
-            httpStatus(BAD_REQUEST),
-            jsonBodyAs[Error](ObligationData.singleErrorResponse)
-          )
-        }
-      }
-
-      "authorised with a valid request with no query parameters and a multi error response" should {
-
-        lazy val queryParameters: VatObligationFilters = VatObligationFilters()
-
-        "return a multi error response model" in {
-
-          isAuthorised()
-
-          And("When wiremock stubbing a successful Get Vat Obligations Data response")
-          DesVatObligationsStub.stubGetVatObligations(vrn, queryParameters)(BAD_REQUEST,
-            Json.toJson(ObligationData.multiErrorModel))
-
-          When(s"Call GET /vat-obligations/$vrn/obligations")
-          val res: WSResponse = VatObligationsComponent.getVatObligations("555555555", queryParameters)
-
-          DesVatObligationsStub.verifyGetVatObligations(vrn, queryParameters)
-
-          Then("the correct multi error response is returned")
-
-          res should have(
-            httpStatus(BAD_REQUEST),
-            jsonBodyAs[MultiError](ObligationData.multiErrorModel)
-          )
-        }
-      }
-
-      "unauthorised" should {
-
-        "return an FORBIDDEN response" in {
-
-          isAuthorised(false)
-
-          When(s"Calling GET /vat-obligations/$vrn/obligations")
-          val res: WSResponse = VatObligationsComponent.getVatObligations(vrn, VatObligationFilters())
-
-          res should have(
-            httpStatus(FORBIDDEN)
-          )
-        }
+      "return the expected success response" in {
+        val response: WSResponse = getStubResponse(OK, Json.toJson(ObligationData.successResponse))
+        response.json.as[Obligations] shouldBe ObligationData.transformedSuccessResponse
       }
     }
 
+    "a user is authorised with a valid request with no query parameters and an error response" should {
+
+      "return a status of 400 (BAD REQUEST)" in {
+        val response: WSResponse = getStubResponse(BAD_REQUEST, Json.toJson(ObligationData.singleErrorResponse))
+        response.status shouldBe BAD_REQUEST
+      }
+
+      "return a single error response" in {
+        val response: WSResponse = getStubResponse(BAD_REQUEST, Json.toJson(ObligationData.singleErrorResponse))
+        response.json.as[Error] shouldBe ObligationData.singleErrorResponse
+      }
+    }
+
+    "a user is authorised with a valid request with no query parameters and a multi error response" should {
+
+      "return a status of 400 (BAD REQUEST)" in {
+        val response: WSResponse = getStubResponse(BAD_REQUEST, Json.toJson(ObligationData.multiErrorModel))
+        response.status shouldBe BAD_REQUEST
+      }
+
+      "return a multi error response model" in {
+        val response: WSResponse = getStubResponse(BAD_REQUEST, Json.toJson(ObligationData.multiErrorModel))
+        response.json.as[MultiError] shouldBe ObligationData.multiErrorModel
+      }
+    }
+
+    "a user is unauthorised" should {
+
+      "return a FORBIDDEN response" in {
+        AuthStub.stubUnauthorised()
+        val response: WSResponse = VatObligationsComponent.getVatObligations(vrn, VatObligationFilters())
+        response.status shouldBe FORBIDDEN
+      }
+    }
   }
 }

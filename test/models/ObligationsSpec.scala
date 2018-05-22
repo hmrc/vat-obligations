@@ -62,5 +62,4 @@ class ObligationsSpec extends SpecBase {
       obligationsJson.as[Obligations] shouldBe obligationsModel
     }
   }
-
 }

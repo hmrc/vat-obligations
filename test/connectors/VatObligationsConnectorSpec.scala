@@ -30,7 +30,6 @@ class VatObligationsConnectorSpec extends SpecBase with MockHttp {
   val testObligations: VatObligations =
     VatObligations(
       Seq(VatObligation(
-        ObligationIdentification("555555555", "VRN"),
         Seq(
           ObligationDetail("F", "1980-02-03", "1980-04-05", Some("1980-02-02"), "1980-04-08", "17AA"),
           ObligationDetail("F", "1981-02-03", "1981-04-05", Some("1981-02-02"), "1981-04-08", "18AA")
@@ -40,11 +39,11 @@ class VatObligationsConnectorSpec extends SpecBase with MockHttp {
     )
 
   val successResponse: Either[Nothing, VatObligations] = Right(testObligations)
-  val badRequestSingleError: Either[ErrorResponse, Nothing] = Left(ErrorResponse(Status.BAD_REQUEST, Error(code = "CODE", message = "ERROR MESSAGE")))
+  val badRequestSingleError: Either[ErrorResponse, Nothing] = Left(ErrorResponse(Status.BAD_REQUEST, Error(code = "CODE", reason = "ERROR MESSAGE")))
   val badRequestMultiError = Left(ErrorResponse(Status.BAD_REQUEST, MultiError(
     failures = Seq(
-      Error(code = "ERROR CODE 1", message = "ERROR MESSAGE 1"),
-      Error(code = "ERROR CODE 2", message = "ERROR MESSAGE 2")
+      Error(code = "ERROR CODE 1", reason = "ERROR MESSAGE 1"),
+      Error(code = "ERROR CODE 2", reason = "ERROR MESSAGE 2")
     )
   )))
 

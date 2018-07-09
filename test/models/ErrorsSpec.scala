@@ -25,7 +25,7 @@ class ErrorsSpec extends SpecBase {
   "The Error model" should {
 
     val desErrorModel = Error("CODE","ERROR MESSAGE")
-    val desErrorJson: JsValue = Json.obj("code"->"CODE","message"->"ERROR MESSAGE")
+    val desErrorJson: JsValue = Json.obj("code"->"CODE","reason"->"ERROR MESSAGE")
 
     "Serialize to Json as expected" in {
       Json.toJson(desErrorModel) shouldBe desErrorJson
@@ -47,11 +47,11 @@ class ErrorsSpec extends SpecBase {
         Json.arr(
           Json.obj(
             "code" -> "CODE 1",
-            "message"->"ERROR MESSAGE 1"
+            "reason"->"ERROR MESSAGE 1"
           ),
           Json.obj(
             "code" -> "CODE 2",
-            "message"->"ERROR MESSAGE 2"
+            "reason"->"ERROR MESSAGE 2"
           )
         )
       )
@@ -74,7 +74,7 @@ class ErrorsSpec extends SpecBase {
     "Have the error message 'The downstream service responded with an unexpected response.'" in {
       UnexpectedResponse.error shouldBe Error(
         code = "UNEXPECTED_DOWNSTREAM_ERROR",
-        message = "The downstream service responded with an unexpected response.")
+        reason = "The downstream service responded with an unexpected response.")
     }
   }
 
@@ -87,7 +87,7 @@ class ErrorsSpec extends SpecBase {
     "Have the error message 'The response did not contain valid json.'" in {
       InvalidJsonResponse.error shouldBe Error(
         code = "INVALID_JSON",
-        message = "The downstream service responded with invalid json.")
+        reason = "The downstream service responded with invalid json.")
     }
 
   }
@@ -101,7 +101,7 @@ class ErrorsSpec extends SpecBase {
     "Have the error message 'The DES response did not match the expected format'" in {
       UnexpectedJsonFormat.error shouldBe Error(
         code = "UNEXPECTED_JSON_FORMAT",
-        message = "The downstream service responded with json which did not match the expected format.")
+        reason = "The downstream service responded with json which did not match the expected format.")
     }
   }
 
@@ -112,7 +112,7 @@ class ErrorsSpec extends SpecBase {
     }
 
     "Have the error message 'The supplied Tax Regime is invalid.'" in {
-      InvalidVrn.message shouldBe "The supplied Vrn is invalid."
+      InvalidVrn.reason shouldBe "The supplied Vrn is invalid."
     }
   }
 
@@ -123,7 +123,7 @@ class ErrorsSpec extends SpecBase {
     }
 
     "Have the error message 'Not authenticated'" in {
-      UnauthenticatedError.message shouldBe "Not authenticated"
+      UnauthenticatedError.reason shouldBe "Not authenticated"
     }
   }
 
@@ -134,7 +134,7 @@ class ErrorsSpec extends SpecBase {
     }
 
     "Have the error message 'Not authorised'" in {
-      ForbiddenError.message shouldBe "Not authorised"
+      ForbiddenError.reason shouldBe "Not authorised"
     }
   }
 }

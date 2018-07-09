@@ -36,7 +36,6 @@ class VatObligationsServiceSpec extends SpecBase with MockVatObligationsConnecto
       val vatObligations: VatObligations =
         VatObligations(
           Seq(VatObligation(
-            ObligationIdentification("555555555", "VRN"),
             Seq(
               ObligationDetail("F", "2017-04-10", "1980-04-11", Some("2017-04-10"), "2017-04-13", "17AA"),
               ObligationDetail("F", "2017-04-15", "1980-04-18", Some("2017-04-15"), "2017-04-18", "17AB")

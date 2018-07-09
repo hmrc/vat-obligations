@@ -42,7 +42,8 @@ class VatObligationsConnector @Inject()(val http: HttpClient, val appConfig: Mic
 
     Logger.debug(s"[VatObligationsConnector][getVatObligations] - Calling GET $url \nHeaders: $desHC\n QueryParams: $queryParameters")
     http.GET(url, queryParameters.toSeqQueryParams)(VatObligationsReads, desHC, ec).map {
-      case vatObligations@Right(_) => vatObligations
+      case vatObligations@Right(_) =>
+        vatObligations
       case error@Left(message) =>
         Logger.warn("[VatObligationsConnector][getVatObligations] DES Error Received. Message: " + message)
         error

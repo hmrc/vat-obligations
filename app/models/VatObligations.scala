@@ -17,6 +17,7 @@
 package models
 
 import play.api.libs.json._
+import play.api.libs.functional.syntax._
 
 case class VatObligations(obligations: Seq[VatObligation])
 
@@ -24,16 +25,10 @@ object VatObligations {
   implicit val format: OFormat[VatObligations] = Json.format[VatObligations]
 }
 
-case class VatObligation(identification: ObligationIdentification, obligationDetails: Seq[ObligationDetail])
+case class VatObligation(obligationDetails: Seq[ObligationDetail])
 
 object VatObligation {
   implicit val format: OFormat[VatObligation] = Json.format[VatObligation]
-}
-
-case class ObligationIdentification(referenceNumber: String, referenceType: String)
-
-object ObligationIdentification {
-  implicit val format: OFormat[ObligationIdentification] = Json.format[ObligationIdentification]
 }
 
 case class ObligationDetail(status: String,
@@ -44,5 +39,15 @@ case class ObligationDetail(status: String,
                             periodKey: String)
 
 object ObligationDetail {
-  implicit val format: OFormat[ObligationDetail] = Json.format[ObligationDetail]
+
+  implicit val reads: Reads[ObligationDetail] = Json.reads[ObligationDetail]
+
+  implicit val clientDataWriter: Writes[ObligationDetail] = (
+    (__ \ "status").write[String] and
+      (__ \ "start").write[String] and
+      (__ \ "end").write[String] and
+      (__ \ "received").writeNullable[String] and
+      (__ \ "due").write[String] and
+      (__ \ "periodKey").write[String]
+    ) (unlift(ObligationDetail.unapply))
 }

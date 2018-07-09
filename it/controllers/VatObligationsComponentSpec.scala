@@ -42,7 +42,7 @@ class VatObligationsComponentSpec extends ComponentSpecBase {
     "a user is authorised with a valid request with no query parameters and a success response" should {
 
       "return a status of 200 (OK)" in {
-        val response: WSResponse = getStubResponse(OK, Json.toJson(ObligationData.successResponse))
+        val response: WSResponse = getStubResponse(OK, ObligationData.successResponse)
         response.status shouldBe 200
       }
 

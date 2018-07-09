@@ -17,20 +17,31 @@
 package testData
 
 import models._
+import play.api.libs.json.{JsValue, Json}
 
 object ObligationData {
 
-  val successResponse: VatObligations =
-    VatObligations(
-      Seq(VatObligation(
-        ObligationIdentification("555555555", "VRN"
-        ),
-        Seq(
-          ObligationDetail("F", "1980-02-03", "1980-04-05", Some("1980-02-02"), "1980-04-08", "17AA"),
-          ObligationDetail("F", "1981-02-03", "1981-04-05", Some("1981-02-02"), "1981-04-08", "18AA")
-        )
-      )
-      ))
+  val successResponse: JsValue = Json.parse(
+    """{
+      |	"obligations": [{
+      |		"obligationDetails": [{
+      |			"status": "F",
+      |			"inboundCorrespondenceFromDate": "1980-02-03",
+      |			"inboundCorrespondenceToDate": "1980-04-05",
+      |			"inboundCorrespondenceDateReceived": "1980-02-02",
+      |			"inboundCorrespondenceDueDate": "1980-04-08",
+      |			"periodKey": "17AA"
+      |		}, {
+      |			"status": "F",
+      |			"inboundCorrespondenceFromDate": "1981-02-03",
+      |			"inboundCorrespondenceToDate": "1981-04-05",
+      |			"inboundCorrespondenceDateReceived": "1981-02-02",
+      |			"inboundCorrespondenceDueDate": "1981-04-08",
+      |			"periodKey": "18AA"
+      |		}]
+      |	}]
+      |}""".stripMargin
+  )
 
   val transformedSuccessResponse: Obligations = Obligations(Seq(
     Obligation("1980-02-03", "1980-04-05", "1980-04-08", "F", "17AA", Some("1980-02-02")),

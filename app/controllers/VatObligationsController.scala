@@ -16,8 +16,8 @@
 
 package controllers
 
-import javax.inject.{Inject, Singleton}
 import controllers.actions.AuthAction
+import javax.inject.{Inject, Singleton}
 import models._
 import play.api.Logger
 import play.api.libs.json.Json
@@ -32,6 +32,7 @@ import scala.concurrent.Future
 @Singleton
 class VatObligationsController @Inject()(val authenticate: AuthAction,
                                                 val vatObligationsService: VatObligationsService) extends BaseController {
+
 
   def getVatObligations(vrn: String, filters: VatObligationFilters): Action[AnyContent] =
     authenticate.async {
@@ -58,17 +59,17 @@ class VatObligationsController @Inject()(val authenticate: AuthAction,
   }
 
   private def desTransform(vatObligations: VatObligations, vrn: String): Obligations = {
-    vatObligations.obligations.find(obj => obj.identification.referenceNumber == vrn
-      && obj.identification.referenceType == "VRN").fold(Obligations(Seq.empty[Obligation])) { obligations =>
-      val found = obligations.obligationDetails.map { obligation =>
-        Obligation(obligation.inboundCorrespondenceFromDate,
-          obligation.inboundCorrespondenceToDate,
-          obligation.inboundCorrespondenceDueDate,
-          obligation.status,
-          obligation.periodKey, obligation.inboundCorrespondenceDateReceived)
+    val found = vatObligations.obligations.map { vatObligation =>
+      vatObligation.obligationDetails.map { obligationDetail =>
+        Obligation(obligationDetail.inboundCorrespondenceFromDate,
+          obligationDetail.inboundCorrespondenceToDate,
+          obligationDetail.inboundCorrespondenceDueDate,
+          obligationDetail.status,
+          obligationDetail.periodKey, obligationDetail.inboundCorrespondenceDateReceived)
       }
-      Obligations(found)
     }
+
+    Obligations(found.flatten)
   }
 
   private def isInvalidVrn(vrn: String): Boolean = {

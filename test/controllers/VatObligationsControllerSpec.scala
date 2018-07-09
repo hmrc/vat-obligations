@@ -30,7 +30,6 @@ class VatObligationsControllerSpec extends SpecBase with MockVatObligationsServi
   val success: VatObligations =
     VatObligations(
       Seq(VatObligation(
-        ObligationIdentification("555555555", "VRN"),
         Seq(
           ObligationDetail("F", "1980-02-03", "1980-04-05", Some("1980-02-02"), "1980-04-08", "17AA"),
           ObligationDetail("F", "1981-02-03", "1981-04-05", Some("1981-02-02"), "1981-04-08", "18AA")
@@ -38,10 +37,28 @@ class VatObligationsControllerSpec extends SpecBase with MockVatObligationsServi
       )
       ))
 
+  val successMultipleObligations: VatObligations =
+    VatObligations(
+      Seq(VatObligation(
+        Seq(
+          ObligationDetail("F", "1980-02-03", "1980-04-05", Some("1980-02-02"), "1980-04-08", "17AA"),
+          ObligationDetail("F", "1980-02-02", "1980-04-02", Some("1980-02-01"), "1980-04-07", "17AB"),
+          ObligationDetail("F", "1981-02-03", "1981-04-05", None, "1981-04-08", "17AC")
+        )
+      ),
+        VatObligation(
+          Seq(
+            ObligationDetail("F", "1981-02-03", "1981-04-05", Some("1981-02-02"), "1981-04-08", "16AA"),
+            ObligationDetail("F", "1981-02-02", "1981-04-02", Some("1981-02-01"), "1981-04-07", "16AB"),
+            ObligationDetail("F", "1982-02-03", "1982-04-05", None, "1982-04-08", "16AC")
+          )
+        )
+      )
+    )
+
   val successEmptyDetail: VatObligations =
     VatObligations(
       Seq(VatObligation(
-        ObligationIdentification("555555555", "VRN"),
         Seq.empty[ObligationDetail]
       )
       ))
@@ -56,16 +73,28 @@ class VatObligationsControllerSpec extends SpecBase with MockVatObligationsServi
     Obligation("1981-02-03", "1981-04-05", "1981-04-08", "F", "18AA", Some("1981-02-02")))
   )
 
-  val singleError = Error(code = "CODE", message = "ERROR MESSAGE")
+  val transformedMultipleObligationsSuccessData: Obligations = Obligations(Seq(
+    Obligation("1980-02-03", "1980-04-05", "1980-04-08", "F", "17AA", Some("1980-02-02")),
+    Obligation("1980-02-02", "1980-04-02", "1980-04-07", "F", "17AB", Some("1980-02-01")),
+    Obligation("1981-02-03", "1981-04-05", "1981-04-08", "F", "17AC", None),
+
+    Obligation("1981-02-03", "1981-04-05", "1981-04-08", "F", "16AA", Some("1981-02-02")),
+    Obligation("1981-02-02", "1981-04-02", "1981-04-07", "F", "16AB", Some("1981-02-01")),
+    Obligation("1982-02-03", "1982-04-05", "1982-04-08", "F", "16AC", None))
+
+  )
+
+  val singleError = Error(code = "CODE", reason = "ERROR MESSAGE")
   val multiError = MultiError(
     failures = Seq(
-      Error(code = "ERROR CODE 1", message = "ERROR MESSAGE 1"),
+      Error(code = "ERROR CODE 1", reason = "ERROR MESSAGE 1"),
       Error(code = "ERROR CODE 2" +
-        "", message = "ERROR MESSAGE 2")
+        "", reason = "ERROR MESSAGE 2")
     )
   )
 
   val successResponse: Either[Nothing, VatObligations] = Right(success)
+  val successResponseMultipleObligations: Either[Nothing, VatObligations] = Right(successMultipleObligations)
   val successResponseEmptyDetail: Either[Nothing, VatObligations] = Right(successEmptyDetail)
   val successResponseEmptyObligations: Either[Nothing, VatObligations] = Right(successEmptyObligations)
   val badRequestSingleError: Either[ErrorResponse, Nothing] = Left(ErrorResponse(Status.BAD_REQUEST, singleError))
@@ -92,6 +121,20 @@ class VatObligationsControllerSpec extends SpecBase with MockVatObligationsServi
 
           "return a json body with the transformed des obligation data" in {
             jsonBodyOf(result) shouldBe Json.toJson(transformedSuccessData)
+          }
+        }
+
+        "for a successful response with multiple obligations from the VatObligationsService" should {
+
+          lazy val result: Result = await(TestVatObligationsController.getVatObligations(testVrn, VatObligationFilters())(fakeRequest))
+
+          "return a status of 200 (OK)" in {
+            setupMockGetVatObligations(testVrn, VatObligationFilters())(successResponseMultipleObligations)
+            status(result) shouldBe Status.OK
+          }
+
+          "return a json body with the transformed des obligation data" in {
+            jsonBodyOf(result) shouldBe Json.toJson(transformedMultipleObligationsSuccessData)
           }
         }
 

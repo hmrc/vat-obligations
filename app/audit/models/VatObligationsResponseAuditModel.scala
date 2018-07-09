@@ -25,12 +25,7 @@ case class VatObligationsResponseAuditModel(vrn: String, transactions: VatObliga
   override val auditType: String = "vatObligationsResponse"
   override val detail: JsValue = Json.obj(
     "vrn" -> vrn,
-    "response" -> Json.toJson(transactions.obligations.map(transaction =>
-      TransactionsAuditModel(
-        referenceNumber = transaction.identification.referenceNumber,
-        referenceType = transaction.identification.referenceType
-      )
-    )
+    "response" -> Json.toJson(transactions
     )
   )
 }

@@ -16,8 +16,8 @@
 
 package audit.models
 
+import _root_.models.{ObligationDetail, VatObligation, VatObligations}
 import base.SpecBase
-import _root_.models.{ObligationDetail, ObligationIdentification, VatObligation, VatObligations}
 import play.api.libs.json.{JsValue, Json}
 
 class VatObligationsResponseAuditModelSpec extends SpecBase {
@@ -33,7 +33,6 @@ class VatObligationsResponseAuditModelSpec extends SpecBase {
       val testTransactions: VatObligations =
         VatObligations(
           Seq(VatObligation(
-            ObligationIdentification("555555555", "VRN"),
             Seq(
               ObligationDetail("F", "1980-03-02", "1980-04-04", Some("1980-02-02"), "1980-05-02", "18AA"),
               ObligationDetail("F", "1981-04-02", "1981-05-04", Some("1981-03-02"), "1981-06-02", "19AA")
@@ -56,13 +55,9 @@ class VatObligationsResponseAuditModelSpec extends SpecBase {
       "Have the correct details for the audit event" in {
         val expected: JsValue = Json.obj(
           "vrn" -> testVrn,
-          "response" -> Json.arr(
-            Json.toJson(TransactionsAuditModel(
-              referenceNumber = "555555555",
-              referenceType = "VRN"
-            )
-            )
-          ))
+          "response" ->
+            Json.toJson(testTransactions)
+        )
 
         TestVatObligationsResponseAuditModel.detail shouldBe expected
       }
@@ -74,9 +69,10 @@ class VatObligationsResponseAuditModelSpec extends SpecBase {
       object TestVatObligationsResponseAuditModel extends VatObligationsResponseAuditModel(testVrn, noTransactions)
 
       "Have the correct details for the audit event" in {
-        val expected = Json.obj(
+        val expected: JsValue = Json.obj(
           "vrn" -> testVrn,
-          "response" -> Json.arr()
+          "response" ->
+            Json.toJson(noTransactions)
         )
         TestVatObligationsResponseAuditModel.detail shouldBe expected
       }

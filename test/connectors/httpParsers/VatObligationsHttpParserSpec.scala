@@ -32,7 +32,6 @@ class VatObligationsHttpParserSpec extends SpecBase {
       val testObligations: VatObligations =
         VatObligations(
           Seq(VatObligation(
-            ObligationIdentification("555555555", "VRN"),
             Seq(
               ObligationDetail("F", "1980-02-03", "1980-04-05", Some("1980-02-02"), "1980-04-08", "17AA"),
               ObligationDetail("F", "1981-02-03", "1981-04-05", Some("1981-02-02"), "1981-04-08", "18AA")
@@ -80,6 +79,88 @@ class VatObligationsHttpParserSpec extends SpecBase {
       }
     }
 
+    "response status is 200 OK and matches expected Schema when the response contains multiple obligations with multiple details" should {
+
+      val testObligations: VatObligations =
+        VatObligations(
+          Seq(VatObligation(
+            Seq(
+              ObligationDetail("F", "1980-02-03", "1980-04-05", Some("1980-02-02"), "1980-04-08", "17AA"),
+              ObligationDetail("F", "1980-02-02", "1980-04-02", Some("1980-02-01"), "1980-04-07", "17AB"),
+              ObligationDetail("F", "1981-02-03", "1981-04-05", None, "1981-04-08", "17AC")
+            )
+          ),
+            VatObligation(
+              Seq(
+                ObligationDetail("F", "1981-02-03", "1981-04-05", Some("1981-02-02"), "1981-04-08", "16AA"),
+                ObligationDetail("F", "1981-02-02", "1981-04-02", Some("1981-02-01"), "1981-04-07", "16AB"),
+                ObligationDetail("F", "1982-02-03", "1982-04-05", None, "19821-04-08", "16AC")
+              )
+            )
+          )
+        )
+
+      val responseJson: JsValue = Json.parse(
+        """{
+          |	"obligations": [{
+          |		"obligationDetails": [{
+          |			"status": "F",
+          |			"inboundCorrespondenceFromDate": "1980-02-03",
+          |			"inboundCorrespondenceToDate": "1980-04-05",
+          |			"inboundCorrespondenceDateReceived": "1980-02-02",
+          |			"inboundCorrespondenceDueDate": "1980-04-08",
+          |			"periodKey": "17AA"
+          |		}, {
+          |			"status": "F",
+          |			"inboundCorrespondenceFromDate": "1980-02-02",
+          |			"inboundCorrespondenceToDate": "1980-04-02",
+          |			"inboundCorrespondenceDateReceived": "1980-02-01",
+          |			"inboundCorrespondenceDueDate": "1980-04-07",
+          |			"periodKey": "17AB"
+          |		}, {
+          |			"status": "F",
+          |			"inboundCorrespondenceFromDate": "1981-02-03",
+          |			"inboundCorrespondenceToDate": "1981-04-05",
+          |			"inboundCorrespondenceDueDate": "1981-04-08",
+          |			"periodKey": "17AC"
+          |		}]
+          |	}, {
+          |		"obligationDetails": [{
+          |			"status": "F",
+          |			"inboundCorrespondenceFromDate": "1981-02-03",
+          |			"inboundCorrespondenceToDate": "1981-04-05",
+          |			"inboundCorrespondenceDateReceived": "1981-02-02",
+          |			"inboundCorrespondenceDueDate": "1981-04-08",
+          |			"periodKey": "16AA"
+          |		}, {
+          |			"status": "F",
+          |			"inboundCorrespondenceFromDate": "1981-02-02",
+          |			"inboundCorrespondenceToDate": "1981-04-02",
+          |			"inboundCorrespondenceDateReceived": "1981-02-01",
+          |			"inboundCorrespondenceDueDate": "1981-04-07",
+          |			"periodKey": "16AB"
+          |		}, {
+          |			"status": "F",
+          |			"inboundCorrespondenceFromDate": "1982-02-03",
+          |			"inboundCorrespondenceToDate": "1982-04-05",
+          |			"inboundCorrespondenceDueDate": "19821-04-08",
+          |			"periodKey": "16AC"
+          |		}]
+          |	}]
+          |}""".stripMargin)
+
+      val httpResponse: AnyRef with HttpResponse = HttpResponse(Status.OK, responseJson = Some(
+        responseJson
+      ))
+
+      val expected: Either[Nothing, VatObligations] = Right(testObligations)
+      val result: VatObligationsHttpParser.HttpGetResult[VatObligations] = VatObligationsReads.read("", "", httpResponse)
+
+      "return a VatObligations instance" in {
+        result shouldEqual expected
+      }
+    }
+
     "the http response status is 200 OK but the response is not as expected" should {
 
       val httpResponse: AnyRef with HttpResponse = HttpResponse(Status.OK, responseJson = Some(Json.obj("invalid" -> "data")))
@@ -98,7 +179,7 @@ class VatObligationsHttpParserSpec extends SpecBase {
       val httpResponse: AnyRef with HttpResponse = HttpResponse(Status.BAD_REQUEST,
         responseJson = Some(Json.obj(
           "code" -> "CODE",
-          "message" -> "ERROR MESSAGE"
+          "reason" -> "ERROR MESSAGE"
         ))
       )
 
@@ -106,7 +187,7 @@ class VatObligationsHttpParserSpec extends SpecBase {
         Status.BAD_REQUEST,
         Error(
           code = "CODE",
-          message = "ERROR MESSAGE"
+          reason = "ERROR MESSAGE"
         )
       ))
 
@@ -124,11 +205,11 @@ class VatObligationsHttpParserSpec extends SpecBase {
           "failures" -> Json.arr(
             Json.obj(
               "code" -> "ERROR CODE 1",
-              "message" -> "ERROR MESSAGE 1"
+              "reason" -> "ERROR MESSAGE 1"
             ),
             Json.obj(
               "code" -> "ERROR CODE 2",
-              "message" -> "ERROR MESSAGE 2"
+              "reason" -> "ERROR MESSAGE 2"
             )
           )
         ))
@@ -138,8 +219,8 @@ class VatObligationsHttpParserSpec extends SpecBase {
         Status.BAD_REQUEST,
         MultiError(
           failures = Seq(
-            Error(code = "ERROR CODE 1", message = "ERROR MESSAGE 1"),
-            Error(code = "ERROR CODE 2", message = "ERROR MESSAGE 2")
+            Error(code = "ERROR CODE 1", reason = "ERROR MESSAGE 1"),
+            Error(code = "ERROR CODE 2", reason = "ERROR MESSAGE 2")
           )
         )
       ))
@@ -185,7 +266,7 @@ class VatObligationsHttpParserSpec extends SpecBase {
       val httpResponse: AnyRef with HttpResponse = HttpResponse(Status.INTERNAL_SERVER_ERROR,
         responseJson = Some(Json.obj(
           "code" -> "code",
-          "message" -> "message"
+          "reason" -> "message"
         ))
       )
 
@@ -193,7 +274,7 @@ class VatObligationsHttpParserSpec extends SpecBase {
         Status.INTERNAL_SERVER_ERROR,
         Error(
           code = "code",
-          message = "message"
+          reason = "message"
         )
       ))
 

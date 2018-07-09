@@ -79,32 +79,6 @@ class VatObligationsHttpParserSpec extends SpecBase {
       }
     }
 
-    "the http response status is 200 OK and matches expected Schema if no data" should {
-
-      val testObligations: VatObligations =
-        VatObligations(
-          Seq.empty[VatObligation]
-          )
-
-
-      val responseJson: JsValue = Json.parse(
-        """{
-          |    "obligations": []
-          |  }""".stripMargin)
-
-      val httpResponse: AnyRef with HttpResponse = HttpResponse(Status.OK, responseJson = Some(
-        responseJson
-      ))
-
-      val expected: Either[Nothing, VatObligations] = Right(testObligations)
-      val result: VatObligationsHttpParser.HttpGetResult[VatObligations] = VatObligationsReads.read("", "", httpResponse)
-
-      "return a VatObligations instance" in {
-        result shouldEqual expected
-      }
-    }
-
-
     "response status is 200 OK and matches expected Schema when the response contains multiple obligations with multiple details" should {
 
       val testObligations: VatObligations =

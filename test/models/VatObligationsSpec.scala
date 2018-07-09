@@ -22,7 +22,7 @@ import play.api.libs.json.{JsValue, Json}
 class VatObligationsSpec extends SpecBase {
 
 
-  "VatObligations when there is a single obligation" should {
+  "VatObligations when there are multiple obligations within a single parent obligation" should {
 
     val singleObligationInputJson: JsValue = Json.parse(
       """{
@@ -94,7 +94,7 @@ class VatObligationsSpec extends SpecBase {
   }
 
 
-  "VatObligations with multiple obligations" should {
+  "VatObligations when there are multiple obligations within multiple parent obligations" should {
 
     val multipleObligationInputJson: JsValue = Json.parse(
       """{

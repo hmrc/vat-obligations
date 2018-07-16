@@ -42,8 +42,7 @@ trait ComponentSpecBase extends TestSuite with CustomMatchers
   def config: Map[String, String] = Map(
     "microservice.services.auth.host" -> mockHost,
     "microservice.services.auth.port" -> mockPort,
-    "microservice.services.des.host" -> mockHost,
-    "microservice.services.des.port" -> mockPort,
+    "microservice.services.des.url" -> mockUrl,
     "microservice.services.des.endpoints.vatObligationsUrlStart" -> mockEndpointStart,
     "microservice.services.des.endpoints.vatObligationsUrlEnd" -> mockEndpointEnd,
     "microservice.services.des.environment" -> mockEnvironment,

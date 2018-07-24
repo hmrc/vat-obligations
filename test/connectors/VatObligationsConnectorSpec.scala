@@ -55,7 +55,7 @@ class VatObligationsConnectorSpec extends SpecBase with MockHttp {
 
     "format the request Url correctly for Income Tax TaxRegime requests" in {
       val actualUrl: String = TestVatObligationsConnector.setupDesVatObligationsUrl(testVrn)
-      val expectedUrl: String = s"${mockAppConfig.desServiceUrl}/obligation-data/555555555/obligations"
+      val expectedUrl: String = s"${mockAppConfig.desServiceUrl}/enterprise/obligation-data/vrn/555555555/VATC"
       actualUrl shouldBe expectedUrl
     }
 

@@ -43,14 +43,14 @@ class VatObligationsControllerSpec extends SpecBase with MockVatObligationsServi
         Seq(
           ObligationDetail("F", "1980-02-03", "1980-04-05", Some("1980-02-02"), "1980-04-08", "17AA"),
           ObligationDetail("F", "1980-02-02", "1980-04-02", Some("1980-02-01"), "1980-04-07", "17AB"),
-          ObligationDetail("F", "1981-02-03", "1981-04-05", None, "1981-04-08", "17AC")
+          ObligationDetail("F", "1981-02-03", "1981-04-05", None, "1981-05-08", "17AC")
         )
       ),
         VatObligation(
           Seq(
             ObligationDetail("F", "1981-02-03", "1981-04-05", Some("1981-02-02"), "1981-04-08", "16AA"),
             ObligationDetail("F", "1981-02-02", "1981-04-02", Some("1981-02-01"), "1981-04-07", "16AB"),
-            ObligationDetail("F", "1982-02-03", "1982-04-05", None, "1982-04-08", "16AC")
+            ObligationDetail("F", "1982-02-03", "1982-04-05", None, "1982-05-08", "16AC")
           )
         )
       )
@@ -69,20 +69,18 @@ class VatObligationsControllerSpec extends SpecBase with MockVatObligationsServi
     )
 
   val transformedSuccessData: Obligations = Obligations(Seq(
-    Obligation("1980-02-03", "1980-04-05", "1980-04-08", "F", "17AA", Some("1980-02-02")),
-    Obligation("1981-02-03", "1981-04-05", "1981-04-08", "F", "18AA", Some("1981-02-02")))
-  )
+    Obligation("1981-02-03", "1981-04-05", "1981-04-08", "F", "18AA", Some("1981-02-02")),
+    Obligation("1980-02-03", "1980-04-05", "1980-04-08", "F", "17AA", Some("1980-02-02"))
+  ))
 
   val transformedMultipleObligationsSuccessData: Obligations = Obligations(Seq(
-    Obligation("1980-02-03", "1980-04-05", "1980-04-08", "F", "17AA", Some("1980-02-02")),
-    Obligation("1980-02-02", "1980-04-02", "1980-04-07", "F", "17AB", Some("1980-02-01")),
-    Obligation("1981-02-03", "1981-04-05", "1981-04-08", "F", "17AC", None),
-
+    Obligation("1982-02-03", "1982-04-05", "1982-05-08", "F", "16AC", None),
+    Obligation("1981-02-03", "1981-04-05", "1981-05-08", "F", "17AC", None),
     Obligation("1981-02-03", "1981-04-05", "1981-04-08", "F", "16AA", Some("1981-02-02")),
     Obligation("1981-02-02", "1981-04-02", "1981-04-07", "F", "16AB", Some("1981-02-01")),
-    Obligation("1982-02-03", "1982-04-05", "1982-04-08", "F", "16AC", None))
-
-  )
+    Obligation("1980-02-03", "1980-04-05", "1980-04-08", "F", "17AA", Some("1980-02-02")),
+    Obligation("1980-02-02", "1980-04-02", "1980-04-07", "F", "17AB", Some("1980-02-01"))
+  ))
 
   val singleError = Error(code = "CODE", reason = "ERROR MESSAGE")
   val multiError = MultiError(

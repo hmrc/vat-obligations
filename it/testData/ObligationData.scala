@@ -44,9 +44,9 @@ object ObligationData {
   )
 
   val transformedSuccessResponse: Obligations = Obligations(Seq(
-    Obligation("1980-02-03", "1980-04-05", "1980-04-08", "F", "17AA", Some("1980-02-02")),
-    Obligation("1981-02-03", "1981-04-05", "1981-04-08", "F", "18AA", Some("1981-02-02")))
-  )
+    Obligation("1981-02-03", "1981-04-05", "1981-04-08", "F", "18AA", Some("1981-02-02")),
+    Obligation("1980-02-03", "1980-04-05", "1980-04-08", "F", "17AA", Some("1980-02-02"))
+  ))
 
   val singleErrorResponse: Error = Error("CODE", "ERROR MESSAGE")
 

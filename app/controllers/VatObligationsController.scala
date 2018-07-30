@@ -61,15 +61,18 @@ class VatObligationsController @Inject()(val authenticate: AuthAction,
   private def desTransform(vatObligations: VatObligations, vrn: String): Obligations = {
     val found = vatObligations.obligations.map { vatObligation =>
       vatObligation.obligationDetails.map { obligationDetail =>
-        Obligation(obligationDetail.inboundCorrespondenceFromDate,
+        Obligation(
+          obligationDetail.inboundCorrespondenceFromDate,
           obligationDetail.inboundCorrespondenceToDate,
           obligationDetail.inboundCorrespondenceDueDate,
           obligationDetail.status,
-          obligationDetail.periodKey, obligationDetail.inboundCorrespondenceDateReceived)
+          obligationDetail.periodKey,
+          obligationDetail.inboundCorrespondenceDateReceived
+        )
       }
     }
 
-    Obligations(found.flatten)
+    Obligations(found.flatten.sortBy(_.due).reverse)
   }
 
   private def isInvalidVrn(vrn: String): Boolean = {

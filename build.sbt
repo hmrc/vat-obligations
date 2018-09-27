@@ -54,11 +54,11 @@ lazy val coverageSettings: Seq[Setting[_]] = {
 
 val compile = Seq(
   ws,
-  "uk.gov.hmrc" %% "bootstrap-play-25" % "1.7.0"
+  "uk.gov.hmrc" %% "bootstrap-play-25" % "3.3.0"
 )
 
 def test(scope: String = "test,it"): Seq[ModuleID] = Seq(
-  "uk.gov.hmrc" %% "hmrctest" % "3.0.0" % scope,
+  "uk.gov.hmrc" %% "hmrctest" % "3.1.0" % scope,
   "org.scalatest" %% "scalatest" % "3.0.4" % scope,
   "org.pegdown" % "pegdown" % "1.6.0" % scope,
   "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.1" % scope,
@@ -73,11 +73,12 @@ def oneForkedJvmPerTest(tests: Seq[TestDefinition]): Seq[Group] = tests map {
 }
 
 lazy val microservice = Project(appName, file("."))
-  .enablePlugins(Seq(play.sbt.PlayScala,SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin) ++ plugins : _*)
+  .enablePlugins(Seq(play.sbt.PlayScala,SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin, SbtArtifactory) ++ plugins : _*)
   .settings(coverageSettings: _*)
   .settings(playSettings : _*)
   .settings(scalaSettings: _*)
   .settings(publishingSettings: _*)
+  .settings(majorVersion := 0)
   .settings(defaultSettings(): _*)
   .settings(
     scalaVersion := "2.11.11",

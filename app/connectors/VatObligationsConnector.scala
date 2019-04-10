@@ -45,7 +45,7 @@ class VatObligationsConnector @Inject()(val http: HttpClient, val appConfig: Mic
       case vatObligations@Right(_) =>
         vatObligations
       case error@Left(message) =>
-        Logger.warn("[VatObligationsConnector][getVatObligations] DES Error Received. Message: " + message)
+        Logger.warn("[VatObligationsConnector][getVatObligations] Error Received. Message: " + message)
         error
     }
   }

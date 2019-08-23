@@ -20,6 +20,7 @@ import javax.inject.{Inject, Singleton}
 import config.MicroserviceAppConfig
 import connectors.httpParsers.VatObligationsHttpParser._
 import models.{VatObligations, VatObligationFilters}
+import play.api.http.Status.NOT_FOUND
 import play.api.Logger
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.logging.Authorization
@@ -44,9 +45,14 @@ class VatObligationsConnector @Inject()(val http: HttpClient, val appConfig: Mic
     http.GET(url, queryParameters.toSeqQueryParams)(VatObligationsReads, desHC, ec).map {
       case vatObligations@Right(_) =>
         vatObligations
-      case error@Left(message) =>
-        Logger.warn("[VatObligationsConnector][getVatObligations] Error Received. Message: " + message)
-        error
+      case error@Left(response) => response.status match {
+        case NOT_FOUND =>
+          Logger.debug("[VatObligationsConnector][getVatObligations] Error Received: " + response)
+          error
+        case _ =>
+          Logger.warn("[VatObligationsConnector][getVatObligations] Error Received: " + response)
+          error
+      }
     }
   }
 }

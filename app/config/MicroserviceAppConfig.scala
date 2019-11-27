@@ -17,13 +17,11 @@
 package config
 
 import javax.inject.{Inject, Singleton}
-
-import play.api.Mode.Mode
 import play.api.{Configuration, Environment}
-import uk.gov.hmrc.play.config.ServicesConfig
 import config.{ConfigKeys => Keys}
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
-trait AppConfig extends ServicesConfig {
+trait AppConfig {
   val desEnvironment: String
   val desToken: String
   val desServiceUrl: String
@@ -32,12 +30,9 @@ trait AppConfig extends ServicesConfig {
 }
 
 @Singleton
-class MicroserviceAppConfig @Inject()(val environment: Environment, val conf: Configuration) extends AppConfig {
+class MicroserviceAppConfig @Inject()(val environment: Environment, val conf: Configuration, servicesConfig: ServicesConfig) extends AppConfig {
 
-  override protected def runModeConfiguration: Configuration = conf
-  override protected def mode: Mode = environment.mode
-  private def loadConfig(key: String) = runModeConfiguration.getString(key)
-    .getOrElse(throw new Exception(s"Missing configuration key: $key"))
+  private def loadConfig(key: String) = servicesConfig.getString(key)
 
   lazy val appName: String = loadConfig("appName")
 

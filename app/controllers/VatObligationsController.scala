@@ -21,17 +21,18 @@ import javax.inject.{Inject, Singleton}
 import models._
 import play.api.Logger
 import play.api.libs.json.Json
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import services.VatObligationsService
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.controller.BaseController
+import uk.gov.hmrc.play.bootstrap.controller.BackendController
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class VatObligationsController @Inject()(val authenticate: AuthAction,
-                                                val vatObligationsService: VatObligationsService) extends BaseController {
+                                                val vatObligationsService: VatObligationsService,
+                                                cc: ControllerComponents
+                                                  )  (implicit ec: ExecutionContext) extends BackendController(cc) {
 
 
   def getVatObligations(vrn: String, filters: VatObligationFilters): Action[AnyContent] =

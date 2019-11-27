@@ -16,20 +16,20 @@
 
 package handlers
 
+import config.MicroserviceAppConfig
 import javax.inject.{Inject, Singleton}
-
 import models.Error
 import play.api.http.HttpErrorHandler
-import play.api.http.Status.{INTERNAL_SERVER_ERROR}
+import play.api.http.Status.INTERNAL_SERVER_ERROR
 import play.api.libs.json.Json
 import play.api.mvc.Results._
 import play.api.mvc.{RequestHeader, Result}
-import play.api.{Configuration, Logger}
+import play.api.Logger
 import uk.gov.hmrc.auth.core.AuthorisationException
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.HeaderCarrierConverter
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.bootstrap.config.{AppName, HttpAuditEvent}
+import uk.gov.hmrc.play.bootstrap.config.HttpAuditEvent
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -40,8 +40,8 @@ import scala.concurrent.Future
   */
 
 @Singleton
-class ErrorHandler @Inject()(val configuration: Configuration, auditConnector: AuditConnector)
-  extends HttpErrorHandler with HttpAuditEvent with AppName {
+class ErrorHandler @Inject()(val appConfig: MicroserviceAppConfig, auditConnector: AuditConnector)
+  extends HttpErrorHandler with HttpAuditEvent {
 
   override def onClientError(request: RequestHeader, statusCode: Int, message: String): Future[Result] = {
 
@@ -87,4 +87,7 @@ class ErrorHandler @Inject()(val configuration: Configuration, auditConnector: A
 
     new Status(errorResponse.code.toInt)(Json.toJson(errorResponse))
   }
+
+  override def appName: String = appConfig.appName
+
 }

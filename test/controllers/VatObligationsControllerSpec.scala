@@ -23,7 +23,8 @@ import mocks.services.MockVatObligationsService
 import models._
 import play.api.http.Status
 import play.api.libs.json.Json
-import play.api.mvc.Result
+import play.api.mvc.{ControllerComponents, Result}
+import play.api.test.Helpers.stubControllerComponents
 
 class VatObligationsControllerSpec extends SpecBase with MockVatObligationsService with MockMicroserviceAuthorisedFunctions {
 
@@ -100,11 +101,13 @@ class VatObligationsControllerSpec extends SpecBase with MockVatObligationsServi
   val testVrn: String = "555555555"
   val badVrn: String = "55"
 
+  val controllerComponents: ControllerComponents = stubControllerComponents()
+
   "The GET VatObligationsController.VatObligations method" when {
 
     "called by an authenticated user" which {
 
-      object TestVatObligationsController extends VatObligationsController(new AuthActionImpl(mockAuth), mockVatObligationsService)
+      object TestVatObligationsController extends VatObligationsController(new AuthActionImpl(mockAuth, controllerComponents), mockVatObligationsService, controllerComponents)
 
       "is requesting VAT details" should {
 
@@ -234,7 +237,7 @@ class VatObligationsControllerSpec extends SpecBase with MockVatObligationsServi
 
     "called by an unauthenticated user" should {
 
-      object TestVatObligationsController extends VatObligationsController(new AuthActionImpl(mockAuth), mockVatObligationsService)
+      object TestVatObligationsController extends VatObligationsController(new AuthActionImpl(mockAuth, controllerComponents), mockVatObligationsService, controllerComponents)
 
       "Return an UNAUTHORISED response" which {
 

@@ -19,16 +19,19 @@ package controllers.actions
 import base.SpecBase
 import mocks.auth.MockMicroserviceAuthorisedFunctions
 import play.api.mvc.Results._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core._
+import play.api.test.Helpers.stubControllerComponents
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class AuthActionImplSpec extends SpecBase with MockMicroserviceAuthorisedFunctions {
 
-  object TestAuthActionImpl extends AuthActionImpl(mockAuth)
+  val controllerComponents: ControllerComponents = stubControllerComponents()
+
+  object TestAuthActionImpl extends AuthActionImpl(mockAuth, controllerComponents)
   def result: Action[AnyContent] = TestAuthActionImpl.async { _ => Future.successful(Ok("")) }
 
   "Auth Action" when {

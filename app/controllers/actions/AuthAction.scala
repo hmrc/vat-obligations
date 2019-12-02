@@ -35,7 +35,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class AuthActionImpl @Inject()(val authorisedFunctions: AuthorisedFunctions, cc: ControllerComponents)(implicit ec: ExecutionContext) extends AuthAction {
 
-  def parser: BodyParser[AnyContent] = cc.parsers.anyContent
+  def parser: BodyParser[AnyContent] = cc.parsers.defaultBodyParser
   protected def executionContext: ExecutionContext = cc.executionContext
 
 

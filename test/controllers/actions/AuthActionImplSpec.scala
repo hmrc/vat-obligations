@@ -29,8 +29,6 @@ import scala.concurrent.Future
 
 class AuthActionImplSpec extends SpecBase with MockMicroserviceAuthorisedFunctions {
 
-  val controllerComponents: ControllerComponents = stubControllerComponents()
-
   object TestAuthActionImpl extends AuthActionImpl(mockAuth, controllerComponents)
   def result: Action[AnyContent] = TestAuthActionImpl.async { _ => Future.successful(Ok("")) }
 

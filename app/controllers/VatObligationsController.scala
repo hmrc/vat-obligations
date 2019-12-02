@@ -16,6 +16,7 @@
 
 package controllers
 
+import auth.AuthenticatedRequest
 import controllers.actions.AuthAction
 import javax.inject.{Inject, Singleton}
 import models._
@@ -30,9 +31,9 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class VatObligationsController @Inject()(val authenticate: AuthAction,
-                                                val vatObligationsService: VatObligationsService,
-                                                cc: ControllerComponents
-                                                  )  (implicit ec: ExecutionContext) extends BackendController(cc) {
+                                         val vatObligationsService: VatObligationsService,
+                                         cc: ControllerComponents)
+                                        (implicit ec: ExecutionContext) extends BackendController(cc) {
 
 
   def getVatObligations(vrn: String, filters: VatObligationFilters): Action[AnyContent] =

@@ -19,13 +19,15 @@ package base
 import config.MicroserviceAppConfig
 import org.scalatestplus.play.guice._
 import play.api.inject.Injector
-import play.api.mvc.AnyContentAsEmpty
+import play.api.mvc.{AnyContentAsEmpty, ControllerComponents}
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.test.UnitSpec
 import utils.MaterializerSupport
 import play.api.http.HeaderNames.REFERER
 import java.time.LocalDate
+
+import play.api.test.Helpers.stubControllerComponents
 
 import scala.concurrent.ExecutionContext
 
@@ -41,5 +43,7 @@ trait SpecBase extends UnitSpec with GuiceOneAppPerSuite with MaterializerSuppor
   implicit lazy val ec: ExecutionContext = injector.instanceOf[ExecutionContext]
 
   def stringToDate(date: String): LocalDate = {LocalDate.parse(date)}
+
+  val controllerComponents: ControllerComponents = stubControllerComponents()
 
 }

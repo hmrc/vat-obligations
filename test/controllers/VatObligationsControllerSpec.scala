@@ -101,13 +101,13 @@ class VatObligationsControllerSpec extends SpecBase with MockVatObligationsServi
   val testVrn: String = "555555555"
   val badVrn: String = "55"
 
-  val controllerComponents: ControllerComponents = stubControllerComponents()
+  val authActionImpl = new AuthActionImpl(mockAuth, controllerComponents)
 
   "The GET VatObligationsController.VatObligations method" when {
 
     "called by an authenticated user" which {
 
-      object TestVatObligationsController extends VatObligationsController(new AuthActionImpl(mockAuth, controllerComponents), mockVatObligationsService, controllerComponents)
+      object TestVatObligationsController extends VatObligationsController(authActionImpl, mockVatObligationsService, controllerComponents)
 
       "is requesting VAT details" should {
 
@@ -237,7 +237,7 @@ class VatObligationsControllerSpec extends SpecBase with MockVatObligationsServi
 
     "called by an unauthenticated user" should {
 
-      object TestVatObligationsController extends VatObligationsController(new AuthActionImpl(mockAuth, controllerComponents), mockVatObligationsService, controllerComponents)
+      object TestVatObligationsController extends VatObligationsController(authActionImpl, mockVatObligationsService, controllerComponents)
 
       "Return an UNAUTHORISED response" which {
 

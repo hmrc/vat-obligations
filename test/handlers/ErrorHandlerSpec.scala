@@ -19,7 +19,6 @@ package handlers
 import base.SpecBase
 import config.MicroserviceAppConfig
 import models.{Error, VatObligations}
-import play.api.Configuration
 import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.test.FakeRequest

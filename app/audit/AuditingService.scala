@@ -17,12 +17,12 @@
 package audit
 
 import javax.inject.{Inject, Singleton}
-
 import audit.models.{AuditModel, ExtendedAuditModel}
 import config.MicroserviceAppConfig
+import org.joda.time.DateTime
 import play.api.Logger
 import play.api.http.HeaderNames.REFERER
-import play.api.libs.json.{JsObject, Json, Writes, JsValue}
+import play.api.libs.json.{JodaReads, JodaWrites, JsObject, JsValue, Json, Reads, Writes}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.AuditExtensions
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.{Disabled, Failure, Success}
@@ -33,6 +33,9 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class AuditingService @Inject()(appConfig: MicroserviceAppConfig, auditConnector: AuditConnector) {
+
+  implicit val dateTimeJsReader: Reads[DateTime] = JodaReads.jodaDateReads("yyyyMMddHHmmss")
+  implicit val dateTimeWriter: Writes[DateTime] = JodaWrites.jodaDateWrites("dd/MM/yyyy HH:mm:ss")
 
   implicit val dataEventWrites: Writes[DataEvent] = Json.writes[DataEvent]
   implicit val extendedDataEventWrites: Writes[ExtendedDataEvent] = Json.writes[ExtendedDataEvent]

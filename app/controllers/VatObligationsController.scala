@@ -16,7 +16,6 @@
 
 package controllers
 
-import auth.AuthenticatedRequest
 import controllers.actions.AuthAction
 import javax.inject.{Inject, Singleton}
 import models._

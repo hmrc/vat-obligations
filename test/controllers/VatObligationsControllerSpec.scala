@@ -23,8 +23,7 @@ import mocks.services.MockVatObligationsService
 import models._
 import play.api.http.Status
 import play.api.libs.json.Json
-import play.api.mvc.{ControllerComponents, Result}
-import play.api.test.Helpers.stubControllerComponents
+import play.api.mvc.Result
 
 class VatObligationsControllerSpec extends SpecBase with MockVatObligationsService with MockMicroserviceAuthorisedFunctions {
 

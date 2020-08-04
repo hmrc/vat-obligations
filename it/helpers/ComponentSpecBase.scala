@@ -17,8 +17,6 @@
 package helpers
 
 import binders.VatObligationsBinders
-import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import helpers.servicemocks.AuthStub
 import models.VatObligationFilters
 import org.scalatest._
 import org.scalatest.concurrent.{Eventually, IntegrationPatience, ScalaFutures}

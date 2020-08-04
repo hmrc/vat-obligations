@@ -27,7 +27,7 @@ import scala.util.{Failure, Success, Try}
 
 object VatObligationsBinders {
 
-  implicit def vatObligationsQueryBinder(implicit stringBinder: QueryStringBindable[String]): QueryStringBindable[VatObligationFilters] = {
+  implicit def vatObligationsQueryBinder: QueryStringBindable[VatObligationFilters] = {
     new QueryStringBindable[VatObligationFilters] {
       override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, VatObligationFilters]] = {
         val bindFrom = dateBind(dateFromKey, params)

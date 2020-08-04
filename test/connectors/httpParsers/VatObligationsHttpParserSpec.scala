@@ -36,8 +36,7 @@ class VatObligationsHttpParserSpec extends SpecBase {
               ObligationDetail("F", "1980-02-03", "1980-04-05", Some("1980-02-02"), "1980-04-08", "17AA"),
               ObligationDetail("F", "1981-02-03", "1981-04-05", Some("1981-02-02"), "1981-04-08", "18AA")
             )
-          )
-          )
+          ))
         )
 
       val responseJson: JsValue = Json.parse(
@@ -67,9 +66,7 @@ class VatObligationsHttpParserSpec extends SpecBase {
           |	}]
           |}""".stripMargin)
 
-      val httpResponse: AnyRef with HttpResponse = HttpResponse(Status.OK, responseJson = Some(
-        responseJson
-      ))
+      val httpResponse: AnyRef with HttpResponse = HttpResponse(Status.OK, responseJson.toString)
 
       val expected: Either[Nothing, VatObligations] = Right(testObligations)
       val result: VatObligationsHttpParser.HttpGetResult[VatObligations] = VatObligationsReads.read("", "", httpResponse)
@@ -149,9 +146,7 @@ class VatObligationsHttpParserSpec extends SpecBase {
           |	}]
           |}""".stripMargin)
 
-      val httpResponse: AnyRef with HttpResponse = HttpResponse(Status.OK, responseJson = Some(
-        responseJson
-      ))
+      val httpResponse: AnyRef with HttpResponse = HttpResponse(Status.OK, responseJson.toString)
 
       val expected: Either[Nothing, VatObligations] = Right(testObligations)
       val result: VatObligationsHttpParser.HttpGetResult[VatObligations] = VatObligationsReads.read("", "", httpResponse)
@@ -163,7 +158,7 @@ class VatObligationsHttpParserSpec extends SpecBase {
 
     "the http response status is 200 OK but the response is not as expected" should {
 
-      val httpResponse: AnyRef with HttpResponse = HttpResponse(Status.OK, responseJson = Some(Json.obj("invalid" -> "data")))
+      val httpResponse: AnyRef with HttpResponse = HttpResponse(Status.OK, Json.obj("invalid" -> "data").toString)
 
       val expected: Either[UnexpectedJsonFormat.type, Nothing] = Left(UnexpectedJsonFormat)
 
@@ -177,10 +172,10 @@ class VatObligationsHttpParserSpec extends SpecBase {
     "the http response status is 400 BAD_REQUEST (single error)" should {
 
       val httpResponse: AnyRef with HttpResponse = HttpResponse(Status.BAD_REQUEST,
-        responseJson = Some(Json.obj(
+        Json.obj(
           "code" -> "CODE",
           "reason" -> "ERROR MESSAGE"
-        ))
+        ).toString
       )
 
       val expected: Either[ErrorResponse, Nothing] = Left(ErrorResponse(
@@ -201,7 +196,7 @@ class VatObligationsHttpParserSpec extends SpecBase {
     "the http response status is 400 BAD_REQUEST (multiple errors)" should {
 
       val httpResponse: AnyRef with HttpResponse = HttpResponse(Status.BAD_REQUEST,
-        responseJson = Some(Json.obj(
+        Json.obj(
           "failures" -> Json.arr(
             Json.obj(
               "code" -> "ERROR CODE 1",
@@ -212,7 +207,7 @@ class VatObligationsHttpParserSpec extends SpecBase {
               "reason" -> "ERROR MESSAGE 2"
             )
           )
-        ))
+        ).toString
       )
 
       val expected: Either[ErrorResponse, Nothing] = Left(ErrorResponse(
@@ -235,7 +230,7 @@ class VatObligationsHttpParserSpec extends SpecBase {
 
     "the http response status is 400 BAD_REQUEST (Unexpected Json Returned)" should {
 
-      val httpResponse: AnyRef with HttpResponse = HttpResponse(Status.BAD_REQUEST, responseJson = Some(Json.obj("foo" -> "bar")))
+      val httpResponse: AnyRef with HttpResponse = HttpResponse(Status.BAD_REQUEST, Json.obj("foo" -> "bar").toString)
 
       val expected: Either[UnexpectedJsonFormat.type, Nothing] = Left(UnexpectedJsonFormat)
 
@@ -249,7 +244,7 @@ class VatObligationsHttpParserSpec extends SpecBase {
 
     "the http response status is 400 BAD_REQUEST (Bad Json Returned)" should {
 
-      val httpResponse: AnyRef with HttpResponse = HttpResponse(Status.BAD_REQUEST, responseString = Some("Banana"))
+      val httpResponse: AnyRef with HttpResponse = HttpResponse(Status.BAD_REQUEST, "Banana")
 
       val expected: Either[InvalidJsonResponse.type, Nothing] = Left(InvalidJsonResponse)
 
@@ -264,10 +259,10 @@ class VatObligationsHttpParserSpec extends SpecBase {
     "the http response status is 500 Internal Server Error" should {
 
       val httpResponse: AnyRef with HttpResponse = HttpResponse(Status.INTERNAL_SERVER_ERROR,
-        responseJson = Some(Json.obj(
+        Json.obj(
           "code" -> "code",
           "reason" -> "message"
-        ))
+        ).toString
       )
 
       val expected: Either[ErrorResponse, Nothing] = Left(ErrorResponse(
@@ -287,7 +282,7 @@ class VatObligationsHttpParserSpec extends SpecBase {
 
     "the http response status is unexpected" should {
 
-      val httpResponse: AnyRef with HttpResponse = HttpResponse(Status.SEE_OTHER)
+      val httpResponse: AnyRef with HttpResponse = HttpResponse(Status.SEE_OTHER, "")
 
       val expected: Either[UnexpectedResponse.type, Nothing] = Left(UnexpectedResponse)
 

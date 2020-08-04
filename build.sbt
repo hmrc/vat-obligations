@@ -54,23 +54,24 @@ lazy val coverageSettings: Seq[Setting[_]] = {
 
 val compile = Seq(
   ws,
-  "uk.gov.hmrc" %% "bootstrap-play-26" % "1.3.0",
-"com.typesafe.play" %% "play-json-joda" % "2.6.10"
+  "uk.gov.hmrc"       %% "bootstrap-backend-play-26" % "2.24.0",
+  "com.typesafe.play" %% "play-json-joda"            % "2.6.10"
 )
 
 def test(scope: String = "test,it"): Seq[ModuleID] = Seq(
-  "uk.gov.hmrc" %% "hmrctest" % "3.9.0-play-26" % scope,
-  "org.scalatest" %% "scalatest" % "3.0.8" % scope,
-  "org.pegdown" % "pegdown" % "1.6.0" % scope,
-  "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % scope,
-  "org.mockito" % "mockito-core" % "2.28.2" % scope,
-  "com.github.tomakehurst" % "wiremock-jre8" % "2.21.0" % "test,it",
-  "com.typesafe.play" %% "play-test" % PlayVersion.current % scope,
-  "org.jsoup" % "jsoup" % "1.12.1" % scope
+  "uk.gov.hmrc"            %% "hmrctest"           % "3.9.0-play-26"     % scope,
+  "org.scalatest"          %% "scalatest"          % "3.0.8"             % scope,
+  "org.pegdown"            %  "pegdown"            % "1.6.0"             % scope,
+  "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2"             % scope,
+  "org.mockito"            %  "mockito-core"       % "2.28.2"            % scope,
+  "com.github.tomakehurst" %  "wiremock-jre8"      % "2.21.0"            % "test,it",
+  "com.typesafe.play"      %% "play-test"          % PlayVersion.current % scope,
+  "org.jsoup"              %  "jsoup"              % "1.12.1"            % scope
 )
 
 def oneForkedJvmPerTest(tests: Seq[TestDefinition]): Seq[Group] = tests map {
-  test => Group(test.name, Seq(test), SubProcess(ForkOptions(runJVMOptions = Seq("-Dtest.name=" + test.name))))
+  test => Group(test.name, Seq(test), SubProcess(
+    ForkOptions().withRunJVMOptions(Vector("-Dtest.name=" + test.name))))
 }
 
 lazy val microservice = Project(appName, file("."))
@@ -82,7 +83,7 @@ lazy val microservice = Project(appName, file("."))
   .settings(majorVersion := 0)
   .settings(defaultSettings(): _*)
   .settings(
-    scalaVersion := "2.11.11",
+    scalaVersion := "2.12.11",
     libraryDependencies ++= appDependencies,
     retrieveManaged := true,
     evictionWarningOptions in update := EvictionWarningOptions.default.withWarnScalaVersionEviction(false),

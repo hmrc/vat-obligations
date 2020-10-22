@@ -89,7 +89,8 @@ lazy val microservice = Project(appName, file("."))
     libraryDependencies ++= appDependencies,
     retrieveManaged := true,
     evictionWarningOptions in update := EvictionWarningOptions.default.withWarnScalaVersionEviction(false),
-    routesImport += "binders.VatObligationsBinders._"
+    routesImport += "binders.VatObligationsBinders._",
+    PlayKeys.playDefaultPort := 9155
   )
   .configs(IntegrationTest)
   .settings(inConfig(IntegrationTest)(Defaults.itSettings): _*)

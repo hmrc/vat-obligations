@@ -93,5 +93,5 @@ class AuditingService @Inject()(appConfig: MicroserviceAppConfig, auditConnector
     )
   }
 
-  private def path(implicit hc: HeaderCarrier) = hc.headers.find(_._1 == REFERER).map(_._2).getOrElse("-")
+  private def path(implicit hc: HeaderCarrier) = hc.extraHeaders.find(_._1 == REFERER).map(_._2).getOrElse("-")
 }

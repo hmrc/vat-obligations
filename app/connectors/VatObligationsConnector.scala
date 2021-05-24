@@ -22,9 +22,7 @@ import connectors.httpParsers.VatObligationsHttpParser._
 import models.{VatObligations, VatObligationFilters}
 import play.api.http.Status.NOT_FOUND
 import play.api.Logger
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.logging.Authorization
-import uk.gov.hmrc.http.HttpClient
+import uk.gov.hmrc.http.{HeaderCarrier,HttpClient}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -34,15 +32,16 @@ class VatObligationsConnector @Inject()(val http: HttpClient, val appConfig: Mic
   private[connectors] def setupDesVatObligationsUrl(vrn: String): String = appConfig.desServiceUrl +
     appConfig.setupDesObligationsStartPath + vrn + appConfig.setupDesObligationsEndPath
 
+  val desHeaders = Seq("Authorization" -> s"Bearer ${appConfig.desToken}", "Environment" -> appConfig.desEnvironment)
+
   def getVatObligations(vrn: String, queryParameters: VatObligationFilters)
                        (implicit headerCarrier: HeaderCarrier, ec: ExecutionContext): Future[HttpGetResult[VatObligations]] = {
 
     val url = setupDesVatObligationsUrl(vrn)
-    val desHC = headerCarrier.copy(authorization = Some(Authorization(s"Bearer ${appConfig.desToken}")))
-      .withExtraHeaders("Environment" -> appConfig.desEnvironment)
+    val hc = headerCarrier.copy(authorization = None)
 
-    Logger.debug(s"[VatObligationsConnector][getVatObligations] - Calling GET $url \nHeaders: $desHC\n QueryParams: $queryParameters")
-    http.GET(url, queryParameters.toSeqQueryParams)(VatObligationsReads, desHC, ec).map {
+    Logger.debug(s"[VatObligationsConnector][getVatObligations] - Calling GET $url \nHeaders: $desHeaders\n QueryParams: $queryParameters")
+    http.GET(url, queryParameters.toSeqQueryParams, desHeaders)(VatObligationsReads, hc, ec).map {
       case vatObligations@Right(_) =>
         vatObligations
       case error@Left(response) => response.status match {

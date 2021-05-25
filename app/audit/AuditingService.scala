@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,5 +93,5 @@ class AuditingService @Inject()(appConfig: MicroserviceAppConfig, auditConnector
     )
   }
 
-  private def path(implicit hc: HeaderCarrier) = hc.headers.find(_._1 == REFERER).map(_._2).getOrElse("-")
+  private def path(implicit hc: HeaderCarrier) = hc.extraHeaders.find(_._1 == REFERER).map(_._2).getOrElse("-")
 }

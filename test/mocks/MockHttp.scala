@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package mocks
 
 import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.BeforeAndAfterEach
@@ -36,7 +37,6 @@ trait MockHttp extends UnitSpec with MockitoSugar with BeforeAndAfterEach {
   }
 
   def setupMockHttpGet[A](url: String, queryParams: Seq[(String, String)])(response: A): OngoingStubbing[Future[A]] =
-    when(mockHttpGet.GET[A](ArgumentMatchers.eq(url),
-      ArgumentMatchers.eq(queryParams))(ArgumentMatchers.any(), ArgumentMatchers.any(),
-      ArgumentMatchers.any())).thenReturn(Future.successful(response))
+    when(mockHttpGet.GET[A](ArgumentMatchers.eq(url), ArgumentMatchers.eq(queryParams), any())(any(),
+      any(), any())).thenReturn(Future.successful(response))
 }

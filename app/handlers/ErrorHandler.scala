@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import play.api.mvc.{RequestHeader, Result}
 import play.api.Logger
 import uk.gov.hmrc.auth.core.AuthorisationException
 import uk.gov.hmrc.http._
-import uk.gov.hmrc.play.HeaderCarrierConverter
+import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.bootstrap.config.HttpAuditEvent
 
@@ -45,7 +45,7 @@ class ErrorHandler @Inject()(val appConfig: MicroserviceAppConfig, auditConnecto
 
   override def onClientError(request: RequestHeader, statusCode: Int, message: String): Future[Result] = {
 
-    implicit val headerCarrier: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
+    implicit val headerCarrier: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
     statusCode match {
       case play.mvc.Http.Status.NOT_FOUND =>
@@ -61,7 +61,7 @@ class ErrorHandler @Inject()(val appConfig: MicroserviceAppConfig, auditConnecto
   }
 
   override def onServerError(request: RequestHeader, ex: Throwable): Future[Result] = {
-    implicit val headerCarrier: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
+    implicit val headerCarrier: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
     Logger.error(s"! Internal server error, for (${request.method}) [${request.uri}] -> ", ex)
 
@@ -80,8 +80,7 @@ class ErrorHandler @Inject()(val appConfig: MicroserviceAppConfig, auditConnecto
     val errorResponse = ex match {
       case e: AuthorisationException => Error(play.mvc.Http.Status.UNAUTHORIZED.toString, e.getMessage)
       case e: HttpException => Error(e.responseCode.toString, e.getMessage)
-      case e: Upstream4xxResponse => Error(e.reportAs.toString, e.getMessage)
-      case e: Upstream5xxResponse => Error(e.reportAs.toString, e.getMessage)
+      case e: UpstreamErrorResponse => Error(e.reportAs.toString, e.getMessage)
       case e: Throwable => Error(INTERNAL_SERVER_ERROR.toString, e.getMessage)
     }
 

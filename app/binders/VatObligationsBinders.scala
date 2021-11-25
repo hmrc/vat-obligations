@@ -19,6 +19,7 @@ package binders
 import java.net.URLEncoder
 import java.time.LocalDate
 
+import jdk.net.SocketFlow.Status
 import models.VatObligationFilters
 import models.VatObligationFilters._
 import play.api.mvc.QueryStringBindable
@@ -34,15 +35,14 @@ object VatObligationsBinders {
         val bindTo = dateBind(dateToKey, params)
         val bindStatus = statusBind(statusKey, params)
 
-        val queryParams = Seq(bindFrom, bindTo, bindStatus)
+        val queryParams = (bindFrom, bindTo, bindStatus)
+        val seqParams = Seq(bindFrom, bindTo, bindStatus)
 
-        queryParams.collect { case _@Left(errorMessage) => errorMessage } match {
-          case x if x.nonEmpty => Some(Left(x.mkString(", "))) //Return the sequence of errors as a single concatenated string
-          case _ => (bindFrom, bindTo, bindStatus) match {
-            case (Right(from), Right(to), Right(status)) =>
-              Some(Right(VatObligationFilters(from, to, status)))
-            case _ => throw new RuntimeException("Unexpected Runtime Error when Parsing/Binding Query Parameters")
-          }
+        queryParams match {
+          case (Right(from), Right(to), Right(status)) =>
+            Some(Right(VatObligationFilters(from, to, status)))
+          case _ =>
+            Some(Left(seqParams.collect{ case _@Left(errorMessage) => errorMessage}.mkString(", ")))
         }
       }
 

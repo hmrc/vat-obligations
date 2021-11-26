@@ -68,40 +68,39 @@ class VatObligationsBindersSpec extends SpecBase {
           actual shouldBe expected
         }
       }
-    }
 
-    "If a dateTo query parameter is passed" which {
+      "If a dateTo query parameter is passed" which {
 
-      "is formatted correctly" should {
+        "is formatted correctly" should {
 
-        val queryParams: Map[String, Seq[String]] = Map(dateToKey -> Seq("2018-01-01"))
+          val queryParams: Map[String, Seq[String]] = Map(dateToKey -> Seq("2018-01-01"))
 
-        "return an VatObligationFilters instance with correct parameters" in {
+          "return an VatObligationFilters instance with correct parameters" in {
 
-          val expected: Option[Right[Nothing, VatObligationFilters]] =
-            Some(Right(VatObligationFilters(None, Some(stringToDate("2018-01-01")))))
-          val actual: Option[Either[String, VatObligationFilters]] =
-            VatObligationsBinders.vatObligationsQueryBinder.bind("", queryParams)
+            val expected: Option[Right[Nothing, VatObligationFilters]] =
+              Some(Right(VatObligationFilters(None, Some(stringToDate("2018-01-01")))))
+            val actual: Option[Either[String, VatObligationFilters]] =
+              VatObligationsBinders.vatObligationsQueryBinder.bind("", queryParams)
 
-          actual shouldBe expected
+            actual shouldBe expected
+          }
+        }
+
+        "is formatted incorrectly" should {
+
+          val queryParams: Map[String, Seq[String]] = Map(dateToKey -> Seq("NoDate"))
+
+          "return a bad request error message with details of the error" in {
+
+            val expected: Option[Left[String, Nothing]] =
+              Some(Left(s"Failed to bind '$dateToKey=NoDate' valid date format should be 'YYYY-MM-DD'."))
+            val actual: Option[Either[String, VatObligationFilters]] =
+              VatObligationsBinders.vatObligationsQueryBinder.bind("", queryParams)
+
+            actual shouldBe expected
+          }
         }
       }
-
-      "is formatted incorrectly" should {
-
-        val queryParams: Map[String, Seq[String]] = Map(dateToKey -> Seq("NoDate"))
-
-        "return a bad request error message with details of the error" in {
-
-          val expected: Option[Left[String, Nothing]] =
-            Some(Left(s"Failed to bind '$dateToKey=NoDate' valid date format should be 'YYYY-MM-DD'."))
-          val actual: Option[Either[String, VatObligationFilters]] =
-            VatObligationsBinders.vatObligationsQueryBinder.bind("", queryParams)
-
-          actual shouldBe expected
-        }
-      }
-
     }
 
     "If a status query parameter is passed" which {
@@ -151,7 +150,6 @@ class VatObligationsBindersSpec extends SpecBase {
         }
       }
     }
-
 
     "If a all query parameters are passed" which {
 

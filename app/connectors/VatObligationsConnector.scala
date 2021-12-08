@@ -19,15 +19,15 @@ package connectors
 import javax.inject.{Inject, Singleton}
 import config.MicroserviceAppConfig
 import connectors.httpParsers.VatObligationsHttpParser._
-import models.{VatObligations, VatObligationFilters}
+import models.{VatObligationFilters, VatObligations}
 import play.api.http.Status.NOT_FOUND
-import play.api.Logger
-import uk.gov.hmrc.http.{HeaderCarrier,HttpClient}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import utils.LoggerUtil
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class VatObligationsConnector @Inject()(val http: HttpClient, val appConfig: MicroserviceAppConfig) {
+class VatObligationsConnector @Inject()(val http: HttpClient, val appConfig: MicroserviceAppConfig) extends LoggerUtil {
 
   private[connectors] def setupDesVatObligationsUrl(vrn: String): String = appConfig.desServiceUrl +
     appConfig.setupDesObligationsStartPath + vrn + appConfig.setupDesObligationsEndPath
@@ -40,16 +40,16 @@ class VatObligationsConnector @Inject()(val http: HttpClient, val appConfig: Mic
     val url = setupDesVatObligationsUrl(vrn)
     val hc = headerCarrier.copy(authorization = None)
 
-    Logger.debug(s"[VatObligationsConnector][getVatObligations] - Calling GET $url \nHeaders: $desHeaders\n QueryParams: $queryParameters")
+    logger.debug(s"[VatObligationsConnector][getVatObligations] - Calling GET $url \nHeaders: $desHeaders\n QueryParams: $queryParameters")
     http.GET(url, queryParameters.toSeqQueryParams, desHeaders)(VatObligationsReads, hc, ec).map {
       case vatObligations@Right(_) =>
         vatObligations
       case error@Left(response) => response.status match {
         case NOT_FOUND =>
-          Logger.debug("[VatObligationsConnector][getVatObligations] Error Received: " + response)
+          logger.debug("[VatObligationsConnector][getVatObligations] Error Received: " + response)
           error
         case _ =>
-          Logger.warn("[VatObligationsConnector][getVatObligations] Error Received: " + response)
+          logger.warn("[VatObligationsConnector][getVatObligations] Error Received: " + response)
           error
       }
     }

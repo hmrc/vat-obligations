@@ -17,30 +17,30 @@
 package services
 
 import javax.inject.{Inject, Singleton}
-
 import audit.AuditingService
 import audit.models.{VatObligationsRequestAuditModel, VatObligationsResponseAuditModel}
 import connectors.VatObligationsConnector
 import models._
-import play.api.Logger
 import uk.gov.hmrc.http.HeaderCarrier
+import utils.LoggerUtil
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class VatObligationsService @Inject()(val vatObligationsConnector: VatObligationsConnector, val auditingService: AuditingService) {
+class VatObligationsService @Inject()(val vatObligationsConnector: VatObligationsConnector, val auditingService: AuditingService)
+  extends LoggerUtil {
 
   def getVatObligations(vrn: String,
                         queryParameters: VatObligationFilters)
                               (implicit headerCarrier: HeaderCarrier, ec: ExecutionContext): Future[Either[ErrorResponse, VatObligations]] = {
 
-    Logger.debug(s"[VatObligationsService][getVatObligations] Auditing Vat Obligations request")
+    logger.debug(s"[VatObligationsService][getVatObligations] Auditing Vat Obligations request")
     auditingService.audit(VatObligationsRequestAuditModel(vrn, queryParameters))
 
-    Logger.debug(s"[VatObligationsService][getVatObligations] Calling vatObligationsConnector with Vrn: $vrn\nParams: $queryParameters")
+    logger.debug(s"[VatObligationsService][getVatObligations] Calling vatObligationsConnector with Vrn: $vrn\nParams: $queryParameters")
     vatObligationsConnector.getVatObligations(vrn, queryParameters).map {
       case success@Right(vatObligations) =>
-        Logger.debug(s"[VatObligationsService][getVatObligations] Auditing Vat Obligations response")
+        logger.debug(s"[VatObligationsService][getVatObligations] Auditing Vat Obligations response")
         auditingService.audit(VatObligationsResponseAuditModel(vrn, vatObligations))
         success
       case error@Left(_) =>

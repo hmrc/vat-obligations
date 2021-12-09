@@ -22,6 +22,7 @@ import mocks.audit.MockAuditingService
 import mocks.connectors.MockVatObligationsConnector
 import models._
 import play.api.http.Status
+import play.api.test.Helpers.{await, defaultAwaitTimeout}
 
 class VatObligationsServiceSpec extends SpecBase with MockVatObligationsConnector with MockAuditingService {
 

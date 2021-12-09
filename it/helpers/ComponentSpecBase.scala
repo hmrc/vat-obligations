@@ -20,9 +20,11 @@ import binders.VatObligationsBinders
 import models.VatObligationFilters
 import org.scalatest._
 import org.scalatest.concurrent.{Eventually, IntegrationPatience, ScalaFutures}
+import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.ws.WSResponse
+import play.api.test.Helpers.{await, defaultAwaitTimeout}
 import play.api.{Application, Environment, Mode}
 
 trait ComponentSpecBase extends TestSuite with CustomMatchers

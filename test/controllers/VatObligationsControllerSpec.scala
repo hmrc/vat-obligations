@@ -24,6 +24,9 @@ import models._
 import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.mvc.Result
+import play.api.test.Helpers.{await, contentAsJson, defaultAwaitTimeout, status}
+
+import scala.concurrent.Future
 
 class VatObligationsControllerSpec extends SpecBase with MockVatObligationsService with MockMicroserviceAuthorisedFunctions {
 
@@ -116,11 +119,11 @@ class VatObligationsControllerSpec extends SpecBase with MockVatObligationsServi
 
           "return a status of 200 (OK)" in {
             setupMockGetVatObligations(testVrn, VatObligationFilters())(successResponse)
-            status(result) shouldBe Status.OK
+            status(Future.successful(result)) shouldBe Status.OK
           }
 
           "return a json body with the transformed des obligation data" in {
-            jsonBodyOf(result) shouldBe Json.toJson(transformedSuccessData)
+            contentAsJson(Future.successful(result)) shouldBe Json.toJson(transformedSuccessData)
           }
         }
 
@@ -130,11 +133,11 @@ class VatObligationsControllerSpec extends SpecBase with MockVatObligationsServi
 
           "return a status of 200 (OK)" in {
             setupMockGetVatObligations(testVrn, VatObligationFilters())(successResponseMultipleObligations)
-            status(result) shouldBe Status.OK
+            status(Future.successful(result)) shouldBe Status.OK
           }
 
           "return a json body with the transformed des obligation data" in {
-            jsonBodyOf(result) shouldBe Json.toJson(transformedMultipleObligationsSuccessData)
+            contentAsJson(Future.successful(result)) shouldBe Json.toJson(transformedMultipleObligationsSuccessData)
           }
         }
 
@@ -144,12 +147,12 @@ class VatObligationsControllerSpec extends SpecBase with MockVatObligationsServi
 
           "return a status of 400 (BAD_REQUEST)" in {
             setupMockGetVatObligations(testVrn, VatObligationFilters())(badRequestSingleError)
-            status(result) shouldBe Status.BAD_REQUEST
+            status(Future.successful(result)) shouldBe Status.BAD_REQUEST
           }
 
           "return a json body with the single error message" in {
 
-            jsonBodyOf(result) shouldBe Json.toJson(singleError)
+            contentAsJson(Future.successful(result)) shouldBe Json.toJson(singleError)
           }
         }
 
@@ -159,7 +162,7 @@ class VatObligationsControllerSpec extends SpecBase with MockVatObligationsServi
 
           "return a status of 404 (NotFound)" in {
             setupMockGetVatObligations(testVrn, VatObligationFilters())(successResponseEmptyDetail)
-            status(result) shouldBe Status.NOT_FOUND
+            status(Future.successful(result)) shouldBe Status.NOT_FOUND
           }
 
         }
@@ -170,7 +173,7 @@ class VatObligationsControllerSpec extends SpecBase with MockVatObligationsServi
 
           "return a status of 404 (NotFound)" in {
             setupMockGetVatObligations(testVrn, VatObligationFilters())(successResponseEmptyObligations)
-            status(result) shouldBe Status.NOT_FOUND
+            status(Future.successful(result)) shouldBe Status.NOT_FOUND
           }
         }
 
@@ -179,11 +182,11 @@ class VatObligationsControllerSpec extends SpecBase with MockVatObligationsServi
           lazy val result: Result = await(TestVatObligationsController.getVatObligations(badVrn, VatObligationFilters())(fakeRequest))
 
           "return a status of 400 (BAD_REQUEST)" in {
-            status(result) shouldBe Status.BAD_REQUEST
+            status(Future.successful(result)) shouldBe Status.BAD_REQUEST
           }
 
           "return a json body with the invalid vrn error message" in {
-            jsonBodyOf(result) shouldBe Json.toJson(InvalidVrn)
+            contentAsJson(Future.successful(result)) shouldBe Json.toJson(InvalidVrn)
           }
         }
 
@@ -193,11 +196,11 @@ class VatObligationsControllerSpec extends SpecBase with MockVatObligationsServi
 
           "return a status of 400 (BAD_REQUEST)" in {
             setupMockGetVatObligations(testVrn, VatObligationFilters())(badRequestMultiError)
-            status(result) shouldBe Status.BAD_REQUEST
+            status(Future.successful(result)) shouldBe Status.BAD_REQUEST
           }
 
           "return a json body with the multiple error messages" in {
-            jsonBodyOf(result) shouldBe Json.toJson(multiError)
+            contentAsJson(Future.successful(result)) shouldBe Json.toJson(multiError)
           }
         }
 
@@ -209,12 +212,12 @@ class VatObligationsControllerSpec extends SpecBase with MockVatObligationsServi
 
         "return a status of 400 (BAD_REQUEST)" in {
           setupMockGetVatObligations(testVrn, VatObligationFilters())(badRequestSingleError)
-          status(result) shouldBe Status.BAD_REQUEST
+          status(Future.successful(result)) shouldBe Status.BAD_REQUEST
         }
 
         "return a json body with the single error message" in {
 
-          jsonBodyOf(result) shouldBe Json.toJson(singleError)
+          contentAsJson(Future.successful(result)) shouldBe Json.toJson(singleError)
         }
       }
 
@@ -224,12 +227,12 @@ class VatObligationsControllerSpec extends SpecBase with MockVatObligationsServi
 
         "return a status of 400 (BAD_REQUEST)" in {
           setupMockGetVatObligations(testVrn, VatObligationFilters())(badRequestMultiError)
-          status(result) shouldBe Status.BAD_REQUEST
+          status(Future.successful(result)) shouldBe Status.BAD_REQUEST
         }
 
         "return a json body with the multiple error messages" in {
 
-          jsonBodyOf(result) shouldBe Json.toJson(multiError)
+          contentAsJson(Future.successful(result)) shouldBe Json.toJson(multiError)
         }
       }
     }
@@ -244,7 +247,7 @@ class VatObligationsControllerSpec extends SpecBase with MockVatObligationsServi
 
         "has status UNAUTHORISED (401)" in {
           setupMockAuthorisationException()
-          status(result) shouldBe Status.UNAUTHORIZED
+          status(Future.successful(result)) shouldBe Status.UNAUTHORIZED
         }
       }
     }

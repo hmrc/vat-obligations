@@ -17,14 +17,15 @@
 package controllers
 
 import controllers.actions.AuthAction
+
 import javax.inject.{Inject, Singleton}
 import models._
-import play.api.Logger
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import services.VatObligationsService
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
+import utils.LoggerUtil
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -32,14 +33,14 @@ import scala.concurrent.{ExecutionContext, Future}
 class VatObligationsController @Inject()(val authenticate: AuthAction,
                                          val vatObligationsService: VatObligationsService,
                                          cc: ControllerComponents)
-                                        (implicit ec: ExecutionContext) extends BackendController(cc) {
+                                        (implicit ec: ExecutionContext) extends BackendController(cc) with LoggerUtil {
 
 
   def getVatObligations(vrn: String, filters: VatObligationFilters): Action[AnyContent] =
     authenticate.async {
       implicit authorisedUser =>
         if (isInvalidVrn(vrn)) {
-          Logger.warn(s"[VatObligationsController][getVatObligations] Invalid Vrn '$vrn' received in request.")
+          logger.warn(s"[VatObligationsController][getVatObligations] Invalid Vrn '$vrn' received in request.")
           Future.successful(BadRequest(Json.toJson(InvalidVrn)))
         } else {
           retrieveVatObligations(vrn, filters)
@@ -47,7 +48,7 @@ class VatObligationsController @Inject()(val authenticate: AuthAction,
     }
 
   private def retrieveVatObligations(vrn: String, filters: VatObligationFilters)(implicit hc: HeaderCarrier) = {
-    Logger.debug(s"[VatObligationsController][retrieveVatObligations] Calling VatObligationsService.getVatObligations")
+    logger.debug(s"[VatObligationsController][retrieveVatObligations] Calling VatObligationsService.getVatObligations")
     vatObligationsService.getVatObligations(vrn, filters).map {
       case _@Right(vatObligations) =>
         val transformed = desTransform(vatObligations, vrn)

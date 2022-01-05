@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ lazy val coverageSettings: Seq[Setting[_]] = {
 
 val compile = Seq(
   ws,
-  "uk.gov.hmrc"       %% "bootstrap-backend-play-28" % "5.17.0",
+  "uk.gov.hmrc"       %% "bootstrap-backend-play-28" % "5.18.0",
   "com.typesafe.play" %% "play-json-joda"            % "2.6.14"
 )
 

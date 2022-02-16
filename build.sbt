@@ -51,20 +51,18 @@ lazy val coverageSettings: Seq[Setting[_]] = {
 
 val compile = Seq(
   ws,
-  "uk.gov.hmrc"       %% "bootstrap-backend-play-28" % "5.18.0",
+  "uk.gov.hmrc"       %% "bootstrap-backend-play-28" % "5.20.0",
   "com.typesafe.play" %% "play-json-joda"            % "2.6.14"
 )
 
 def test(scope: String = "test,it"): Seq[ModuleID] = Seq(
-  "org.scalatest"          %% "scalatest"          % "3.1.4"             % scope,
-  "org.pegdown"            %  "pegdown"            % "1.6.0"             % scope,
-  "org.scalatestplus.play" %% "scalatestplus-play" % "5.1.0"             % scope,
-  "org.mockito"            %  "mockito-core"       % "2.28.2"            % scope,
-  "com.github.tomakehurst" %  "wiremock-jre8"      % "2.26.3"            % "test,it",
-  "com.typesafe.play"      %% "play-test"          % PlayVersion.current % scope,
-  "org.jsoup"              %  "jsoup"              % "1.13.1"            % scope,
-  "org.scalatestplus"      %% "mockito-3-3"        % "3.1.2.0"           % scope,
-  "com.vladsch.flexmark"   % "flexmark-all"        % "0.36.8"            % scope
+  "uk.gov.hmrc"            %% "bootstrap-test-play-28" % "5.20.0"            % scope,
+  "org.pegdown"            %  "pegdown"                % "1.6.0"             % scope,
+  "org.mockito"            %  "mockito-core"           % "2.28.2"            % scope,
+  "com.github.tomakehurst" %  "wiremock-jre8"          % "2.26.3"            % "test,it",
+  "org.jsoup"              %  "jsoup"                  % "1.13.1"            % scope,
+  "org.scalatestplus"      %% "mockito-3-3"            % "3.1.2.0"           % scope,
+  "com.vladsch.flexmark"   % "flexmark-all"            % "0.36.8"            % scope
 )
 
 def oneForkedJvmPerTest(tests: Seq[TestDefinition]): Seq[Group] = tests map {
@@ -81,7 +79,7 @@ lazy val microservice = Project(appName, file("."))
   .settings(majorVersion := 0)
   .settings(defaultSettings(): _*)
   .settings(
-    scalaVersion := "2.12.14",
+    scalaVersion := "2.12.15",
     libraryDependencies ++= appDependencies,
     retrieveManaged := true,
     evictionWarningOptions in update := EvictionWarningOptions.default.withWarnScalaVersionEviction(false),

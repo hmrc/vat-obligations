@@ -24,7 +24,6 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import org.scalatest.concurrent.{Eventually, IntegrationPatience}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.http.HeaderNames
 import play.api.libs.ws.{WSClient, WSRequest}
 
 object WiremockHelper extends Eventually with IntegrationPatience {
@@ -75,9 +74,9 @@ trait WiremockHelper {
 
   def resetWiremock(): Unit = WireMock.reset()
 
-  def buildClient(path: String, additionalCookies: Map[String, String] = Map.empty): WSRequest =
+  def buildClient(path: String): WSRequest =
     ws.url(s"http://localhost:$port$path")
-    .withHttpHeaders(HeaderNames.COOKIE -> SessionCookieBaker.bakeSessionCookie(additionalCookies), "Authorization" -> "localToken")
+    .withHttpHeaders("Authorization" -> "localToken")
     .withFollowRedirects(false)
 
 }

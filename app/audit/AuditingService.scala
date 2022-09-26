@@ -37,12 +37,9 @@ class AuditingService @Inject()(appConfig: MicroserviceAppConfig, auditConnector
   implicit val dateTimeJsReader: Reads[DateTime] = JodaReads.jodaDateReads("yyyyMMddHHmmss")
   implicit val dateTimeWriter: Writes[DateTime] = JodaWrites.jodaDateWrites("dd/MM/yyyy HH:mm:ss")
 
-  implicit val dataEventWrites: Writes[DataEvent] = Json.writes[DataEvent]
-  implicit val extendedDataEventWrites: Writes[ExtendedDataEvent] = Json.writes[ExtendedDataEvent]
-
   def audit(auditModel: AuditModel)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[AuditResult] = {
     val dataEvent: DataEvent = toDataEvent(appConfig.appName, auditModel, path)
-    logger.debug(s"Splunk Audit Event:\n\n${Json.toJson(dataEvent)}")
+    logger.debug(s"Splunk Audit Event:\n\n${dataEvent}")
     auditConnector.sendEvent(dataEvent).map {
       case Success =>
         logger.debug("Splunk Audit Successful")
@@ -58,7 +55,7 @@ class AuditingService @Inject()(appConfig: MicroserviceAppConfig, auditConnector
 
   def audit(auditModel: ExtendedAuditModel)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[AuditResult] = {
     val extendedDataEvent: ExtendedDataEvent = toDataEvent(appConfig.appName, auditModel, path)
-    logger.debug(s"Splunk Audit Event:\n\n${Json.toJson(extendedDataEvent)}")
+    logger.debug(s"Splunk Audit Event:\n\n${extendedDataEvent}")
     auditConnector.sendExtendedEvent(extendedDataEvent).map {
       case Success =>
         logger.debug("Splunk Audit Successful")

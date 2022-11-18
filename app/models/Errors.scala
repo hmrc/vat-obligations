@@ -39,12 +39,12 @@ case class ErrorResponse(status: Int, error: Errors)
 object UnauthenticatedError extends Error(
   code = "UNAUTHENTICATED",
   reason = "Not authenticated"
-){implicit val writes: Writes[UnauthenticatedError.type] = Json.writes[UnauthenticatedError.type]}
+){implicit val writes: Format[UnauthenticatedError.type] = Json.format[UnauthenticatedError.type]}
 
 object ForbiddenError extends Error(
   code = "UNAUTHORISED",
   reason = "Not authorised"
-){implicit val format: Writes[ForbiddenError.type] = Json.writes[ForbiddenError.type]}
+){implicit val format: Format[ForbiddenError.type] = Json.format[ForbiddenError.type]}
 
 object InvalidJsonResponse extends ErrorResponse(
   status = Status.INTERNAL_SERVER_ERROR,

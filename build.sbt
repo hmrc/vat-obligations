@@ -24,7 +24,7 @@ val appName = "vat-obligations"
 lazy val appDependencies: Seq[ModuleID] = compile ++ test()
 lazy val plugins: Seq[Plugins] = Seq.empty
 lazy val playSettings: Seq[Setting[_]] = Seq.empty
-val bootstrapPlayVersion = "7.4.0"
+val bootstrapPlayVersion = "7.11.0"
 
 lazy val coverageSettings: Seq[Setting[_]] = {
   import scoverage.ScoverageKeys
@@ -52,7 +52,7 @@ lazy val coverageSettings: Seq[Setting[_]] = {
 val compile = Seq(
   ws,
   "uk.gov.hmrc"       %% "bootstrap-backend-play-28" % bootstrapPlayVersion,
-  "com.typesafe.play" %% "play-json-joda"            % "2.6.14"
+  "com.typesafe.play" %% "play-json-joda"            % "2.10.0-RC7"
 )
 
 def test(scope: String = "test,it"): Seq[ModuleID] = Seq(
@@ -77,10 +77,9 @@ lazy val microservice = Project(appName, file("."))
   .settings(majorVersion := 0)
   .settings(defaultSettings(): _*)
   .settings(
-    scalaVersion := "2.12.16",
+    scalaVersion := "2.13.8",
     libraryDependencies ++= appDependencies,
     retrieveManaged := true,
-    update / evictionWarningOptions := EvictionWarningOptions.default.withWarnScalaVersionEviction(false),
     routesImport += "binders.VatObligationsBinders._",
     PlayKeys.playDefaultPort := 9155
   )

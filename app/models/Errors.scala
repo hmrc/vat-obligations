@@ -17,7 +17,7 @@
 package models
 
 import play.api.http.Status
-import play.api.libs.json.{Format, Json, Writes}
+import play.api.libs.json.{Format, Json}
 
 sealed trait Errors
 
@@ -39,7 +39,7 @@ case class ErrorResponse(status: Int, error: Errors)
 object UnauthenticatedError extends Error(
   code = "UNAUTHENTICATED",
   reason = "Not authenticated"
-){implicit val writes: Format[UnauthenticatedError.type] = Json.format[UnauthenticatedError.type]}
+){implicit val format: Format[UnauthenticatedError.type] = Json.format[UnauthenticatedError.type]}
 
 object ForbiddenError extends Error(
   code = "UNAUTHORISED",

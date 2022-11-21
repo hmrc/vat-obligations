@@ -32,8 +32,7 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.bootstrap.config.HttpAuditEvent
 import utils.LoggerUtil
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 /**
   * Based on uk.gov.hmrc.play.bootstrap.http.JsonErrorHandler
@@ -41,7 +40,7 @@ import scala.concurrent.Future
   */
 
 @Singleton
-class ErrorHandler @Inject()(val appConfig: MicroserviceAppConfig, auditConnector: AuditConnector)
+class ErrorHandler @Inject()(val appConfig: MicroserviceAppConfig, auditConnector: AuditConnector)(ec : ExecutionContext)
   extends HttpErrorHandler with HttpAuditEvent with LoggerUtil {
 
   override def onClientError(request: RequestHeader, statusCode: Int, message: String): Future[Result] = {
@@ -50,13 +49,13 @@ class ErrorHandler @Inject()(val appConfig: MicroserviceAppConfig, auditConnecto
 
     statusCode match {
       case play.mvc.Http.Status.NOT_FOUND =>
-        auditConnector.sendEvent(dataEvent("ResourceNotFound", "Resource Endpoint Not Found", request))
+        auditConnector.sendEvent(dataEvent("ResourceNotFound", "Resource Endpoint Not Found", request))(headerCarrier,ec)
         Future.successful(NotFound(Json.toJson(Error("NOT_FOUND", s"URI '${Some(request.path).get}' not found"))))
       case play.mvc.Http.Status.BAD_REQUEST =>
-        auditConnector.sendEvent(dataEvent("ServerValidationError", "Request bad format exception", request))
+        auditConnector.sendEvent(dataEvent("ServerValidationError", "Request bad format exception", request))(headerCarrier,ec)
         Future.successful(BadRequest(Json.toJson(Error("BAD_REQUEST", s"Bad Request. Message: '$message'"))))
       case _ =>
-        auditConnector.sendEvent(dataEvent("ClientError", s"A client error occurred, status: $statusCode", request))
+        auditConnector.sendEvent(dataEvent("ClientError", s"A client error occurred, status: $statusCode", request))(headerCarrier,ec)
         Future.successful(Status(statusCode)(Json.toJson(Error(statusCode.toString, message))))
     }
   }
@@ -73,7 +72,7 @@ class ErrorHandler @Inject()(val appConfig: MicroserviceAppConfig, auditConnecto
       case _ => "ServerInternalError"
     }
 
-    auditConnector.sendEvent(dataEvent(code, "Unexpected error", request, Map("transactionFailureReason" -> ex.getMessage)))
+    auditConnector.sendEvent(dataEvent(code, "Unexpected error", request, Map("transactionFailureReason" -> ex.getMessage)))(headerCarrier,ec)
     Future.successful(resolveError(ex))
   }
 

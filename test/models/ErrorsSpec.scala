@@ -27,6 +27,7 @@ class ErrorsSpec extends SpecBase {
     val desErrorModel = Error("CODE","ERROR MESSAGE")
     val desErrorJson: JsValue = Json.obj("code"->"CODE","reason"->"ERROR MESSAGE")
 
+
     "Serialize to Json as expected" in {
       Json.toJson(desErrorModel) shouldBe desErrorJson
     }
@@ -39,19 +40,19 @@ class ErrorsSpec extends SpecBase {
   "The MultiError model" should {
 
     val desMultiErrorModel = MultiError(failures = Seq(
-      Error("CODE 1","ERROR MESSAGE 1"),
-      Error("CODE 2","ERROR MESSAGE 2")
+      Error("CODE 1", "ERROR MESSAGE 1"),
+      Error("CODE 2", "ERROR MESSAGE 2")
     ))
     val desMultiErrorJson: JsValue =
       Json.obj("failures" ->
         Json.arr(
           Json.obj(
             "code" -> "CODE 1",
-            "reason"->"ERROR MESSAGE 1"
+            "reason" -> "ERROR MESSAGE 1"
           ),
           Json.obj(
             "code" -> "CODE 2",
-            "reason"->"ERROR MESSAGE 2"
+            "reason" -> "ERROR MESSAGE 2"
           )
         )
       )
@@ -63,6 +64,36 @@ class ErrorsSpec extends SpecBase {
     "Deserialize to a MultiError as expected" in {
       desMultiErrorJson.as[MultiError] shouldBe desMultiErrorModel
     }
+  }
+
+  "The UnauthenticatedError model" should {
+
+    val unauthenticatedErrorJson: JsValue = Json.obj("code"->"UNAUTHENTICATED","reason"->"Not authenticated")
+
+    "deserialize to json" in {
+      Json.toJson(UnauthenticatedError) shouldBe unauthenticatedErrorJson
+    }
+
+  }
+
+  "The ForbiddenError model" should {
+
+    val forbiddenErrorJson: JsValue = Json.obj("code" -> "UNAUTHORISED", "reason" -> "Not authorised")
+
+    "deserialize to json" in {
+      Json.toJson(ForbiddenError) shouldBe forbiddenErrorJson
+    }
+
+  }
+
+  "The InvalidVrn model" should {
+
+    val invalidVrnJson: JsValue = Json.obj("code" -> "ERROR_VRN_INVALID", "reason" -> "The supplied Vrn is invalid.")
+
+    "deserialize to json" in {
+      Json.toJson(InvalidVrn) shouldBe invalidVrnJson
+    }
+
   }
 
   "The UnexpectedResponse object" should {

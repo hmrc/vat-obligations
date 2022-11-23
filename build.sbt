@@ -24,7 +24,7 @@ val appName = "vat-obligations"
 lazy val appDependencies: Seq[ModuleID] = compile ++ test()
 lazy val plugins: Seq[Plugins] = Seq.empty
 lazy val playSettings: Seq[Setting[_]] = Seq.empty
-val bootstrapPlayVersion = "7.11.0"
+val bootstrapPlayVersion = "7.12.0"
 
 lazy val coverageSettings: Seq[Setting[_]] = {
   import scoverage.ScoverageKeys
@@ -59,8 +59,8 @@ def test(scope: String = "test,it"): Seq[ModuleID] = Seq(
   "uk.gov.hmrc"            %% "bootstrap-test-play-28" % bootstrapPlayVersion % scope,
   "org.pegdown"            %  "pegdown"                % "1.6.0"              % scope,
   "com.github.tomakehurst" %  "wiremock-jre8"          % "2.26.3"             % scope,
-  "org.jsoup"              %  "jsoup"                  % "1.13.1"             % scope,
-  "org.scalatestplus"      %% "mockito-3-3"            % "3.1.2.0"            % scope
+  "org.jsoup"              %  "jsoup"                  % "1.15.3"             % scope,
+  "org.scalatestplus"      %% "mockito-3-3"            % "3.2.2.0"            % scope
 )
 
 def oneForkedJvmPerTest(tests: Seq[TestDefinition]): Seq[Group] = tests map {

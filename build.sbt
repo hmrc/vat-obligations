@@ -24,7 +24,7 @@ val appName = "vat-obligations"
 lazy val appDependencies: Seq[ModuleID] = compile ++ test()
 lazy val plugins: Seq[Plugins] = Seq.empty
 lazy val playSettings: Seq[Setting[_]] = Seq.empty
-val bootstrapPlayVersion = "7.4.0"
+val bootstrapPlayVersion = "7.12.0"
 
 lazy val coverageSettings: Seq[Setting[_]] = {
   import scoverage.ScoverageKeys
@@ -52,15 +52,15 @@ lazy val coverageSettings: Seq[Setting[_]] = {
 val compile = Seq(
   ws,
   "uk.gov.hmrc"       %% "bootstrap-backend-play-28" % bootstrapPlayVersion,
-  "com.typesafe.play" %% "play-json-joda"            % "2.6.14"
+  "com.typesafe.play" %% "play-json-joda"            % "2.10.0-RC7"
 )
 
 def test(scope: String = "test,it"): Seq[ModuleID] = Seq(
   "uk.gov.hmrc"            %% "bootstrap-test-play-28" % bootstrapPlayVersion % scope,
   "org.pegdown"            %  "pegdown"                % "1.6.0"              % scope,
   "com.github.tomakehurst" %  "wiremock-jre8"          % "2.26.3"             % scope,
-  "org.jsoup"              %  "jsoup"                  % "1.13.1"             % scope,
-  "org.scalatestplus"      %% "mockito-3-3"            % "3.1.2.0"            % scope
+  "org.jsoup"              %  "jsoup"                  % "1.15.3"             % scope,
+  "org.scalatestplus"      %% "mockito-3-3"            % "3.2.2.0"            % scope
 )
 
 def oneForkedJvmPerTest(tests: Seq[TestDefinition]): Seq[Group] = tests map {
@@ -77,10 +77,9 @@ lazy val microservice = Project(appName, file("."))
   .settings(majorVersion := 0)
   .settings(defaultSettings(): _*)
   .settings(
-    scalaVersion := "2.12.16",
+    scalaVersion := "2.13.8",
     libraryDependencies ++= appDependencies,
     retrieveManaged := true,
-    update / evictionWarningOptions := EvictionWarningOptions.default.withWarnScalaVersionEviction(false),
     routesImport += "binders.VatObligationsBinders._",
     PlayKeys.playDefaultPort := 9155
   )

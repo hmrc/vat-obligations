@@ -27,9 +27,12 @@ import uk.gov.hmrc.http.{JsValidationException, NotFoundException, UpstreamError
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import play.api.test.Helpers.{contentAsJson, defaultAwaitTimeout, status}
 
+import scala.concurrent.ExecutionContext
+
 class ErrorHandlerSpec extends SpecBase {
 
-  object TestErrorHandler extends ErrorHandler(injector.instanceOf[MicroserviceAppConfig], injector.instanceOf[AuditConnector])
+  object TestErrorHandler extends
+    ErrorHandler(injector.instanceOf[MicroserviceAppConfig], injector.instanceOf[AuditConnector])(injector.instanceOf[ExecutionContext])
 
   "The ErrorHandler.onClientError method" when {
 

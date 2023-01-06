@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,9 +32,6 @@ lazy val coverageSettings: Seq[Setting[_]] = {
   val excludedPackages = Seq(
     "<empty>",
     "Reverse.*",
-    "com.kenshoo.play.metrics.*",
-    "controllers.javascript.*",
-    "uk.gov.hmrc.BuildInfo",
     "app.*",
     "prod.*",
     "config.*",
@@ -57,8 +54,6 @@ val compile = Seq(
 
 def test(scope: String = "test,it"): Seq[ModuleID] = Seq(
   "uk.gov.hmrc"            %% "bootstrap-test-play-28" % bootstrapPlayVersion % scope,
-  "org.pegdown"            %  "pegdown"                % "1.6.0"              % scope,
-  "com.github.tomakehurst" %  "wiremock-jre8"          % "2.26.3"             % scope,
   "org.jsoup"              %  "jsoup"                  % "1.15.3"             % scope,
   "org.scalatestplus"      %% "mockito-3-3"            % "3.2.2.0"            % scope
 )

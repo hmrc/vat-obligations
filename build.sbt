@@ -35,7 +35,6 @@ lazy val coverageSettings: Seq[Setting[_]] = {
     "app.*",
     "prod.*",
     "config.*",
-    "testOnlyDoNotUseInAppConf.*"
   )
 
   Seq(
@@ -71,6 +70,7 @@ lazy val microservice = Project(appName, file("."))
   .settings(publishingSettings: _*)
   .settings(majorVersion := 0)
   .settings(defaultSettings(): _*)
+  .settings(scalacOptions ++= Seq("-Wconf:cat=unused-imports&src=.*routes.*:s"))
   .settings(
     scalaVersion := "2.13.8",
     libraryDependencies ++= appDependencies,

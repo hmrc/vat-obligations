@@ -17,7 +17,6 @@
 import sbt.Tests.{Group, SubProcess}
 import uk.gov.hmrc.DefaultBuildSettings._
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin
-import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
 
 val appName = "vat-obligations"
 
@@ -34,8 +33,7 @@ lazy val coverageSettings: Seq[Setting[_]] = {
     "Reverse.*",
     "app.*",
     "prod.*",
-    "config.*",
-    "testOnlyDoNotUseInAppConf.*"
+    "config.*"
   )
 
   Seq(
@@ -68,9 +66,9 @@ lazy val microservice = Project(appName, file("."))
   .settings(coverageSettings: _*)
   .settings(playSettings : _*)
   .settings(scalaSettings: _*)
-  .settings(publishingSettings: _*)
   .settings(majorVersion := 0)
   .settings(defaultSettings(): _*)
+  .settings(scalacOptions ++= Seq("-Wconf:cat=unused-imports&src=.*routes.*:s"))
   .settings(
     scalaVersion := "2.13.8",
     libraryDependencies ++= appDependencies,

@@ -19,7 +19,6 @@ package audit.models
 import models.VatObligations
 import play.api.libs.json.{JsValue, Json}
 
-// TODO: This code will need tweaking to match audit requirements from TXM or otherwise, or removed if none.
 case class VatObligationsResponseAuditModel(vrn: String, transactions: VatObligations) extends ExtendedAuditModel {
   override val transactionName: String = "vat-obligations-response"
   override val auditType: String = "vatObligationsResponse"

@@ -19,7 +19,6 @@ package audit.models
 import models._
 import models.VatObligationFilters._
 
-// TODO: This code will need tweaking to match audit requirements from TXM or otherwise, or removed if none.
 case class VatObligationsRequestAuditModel(vrn: String, queryParams: VatObligationFilters) extends AuditModel {
 
   override val transactionName: String = "vat-obligations-request"
@@ -28,6 +27,6 @@ case class VatObligationsRequestAuditModel(vrn: String, queryParams: VatObligati
     Some("vrn" -> vrn),
     queryParams.from.map(dateFromKey -> _.toString),
     queryParams.to.map(dateToKey -> _.toString),
-    queryParams.status.map(statusKey -> _.toString)
+    queryParams.status.map(statusKey -> _)
   ).flatten
 }

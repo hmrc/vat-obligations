@@ -37,7 +37,7 @@ trait MockHttp extends AnyWordSpecLike with Matchers with OptionValues with Mock
     reset(mockHttpGet)
   }
 
-  def setupMockHttpGet[A](url: String, queryParams: Seq[(String, String)])(response: A): OngoingStubbing[Future[A]] =
+  def setupMockHttpGet[A](url: String, queryParams: Seq[(String, String)])(response: Future[A]): OngoingStubbing[Future[A]] =
     when(mockHttpGet.GET[A](ArgumentMatchers.eq(url), ArgumentMatchers.eq(queryParams), any())(any(),
-      any(), any())).thenReturn(Future.successful(response))
+      any(), any())).thenReturn(response)
 }

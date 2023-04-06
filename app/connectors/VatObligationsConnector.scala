@@ -20,8 +20,10 @@ import javax.inject.{Inject, Singleton}
 import config.MicroserviceAppConfig
 import connectors.httpParsers.VatObligationsHttpParser._
 import models.{VatObligationFilters, VatObligations}
+import models.{Error, ErrorResponse}
 import play.api.http.Status.NOT_FOUND
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import play.api.http.Status.BAD_GATEWAY
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpException}
 import utils.LoggerUtil
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -52,6 +54,10 @@ class VatObligationsConnector @Inject()(val http: HttpClient, val appConfig: Mic
           logger.warn("[VatObligationsConnector][getVatObligations] Error Received: " + response)
           error
       }
+    }.recover {
+      case ex: HttpException =>
+        logger.warn(s"[VatObligationsConnector][getVatObligations] - HTTP exception received: ${ex.message}")
+        Left(ErrorResponse(BAD_GATEWAY, Error("BAD_GATEWAY", ex.message)))
     }
   }
 }

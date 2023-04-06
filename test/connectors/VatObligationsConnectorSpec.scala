@@ -22,7 +22,9 @@ import mocks.MockHttp
 import models._
 import play.api.http.Status
 import models.VatObligationFilters._
+import play.api.http.Status.BAD_GATEWAY
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
+import uk.gov.hmrc.http.RequestTimeoutException
 
 import scala.concurrent.Future
 
@@ -41,6 +43,7 @@ class VatObligationsConnectorSpec extends SpecBase with MockHttp {
 
   val successResponse: Either[Nothing, VatObligations] = Right(testObligations)
   val badRequestSingleError: Either[ErrorResponse, Nothing] = Left(ErrorResponse(Status.BAD_REQUEST, Error(code = "CODE", reason = "ERROR MESSAGE")))
+  val badGatewayError: Either[ErrorResponse, Nothing] = Left(ErrorResponse(Status.BAD_GATEWAY, Error(code = "CODE", reason = "ERROR MESSAGE")))
   val badRequestMultiError = Left(ErrorResponse(Status.BAD_REQUEST, MultiError(
     failures = Seq(
       Error(code = "ERROR CODE 1", reason = "ERROR MESSAGE 1"),
@@ -69,7 +72,7 @@ class VatObligationsConnectorSpec extends SpecBase with MockHttp {
             dateFromKey -> "2018-04-06",
             dateToKey -> "2019-04-05",
             statusKey -> "F"
-          ))(successResponse)
+          ))(Future.successful(successResponse))
           val result: Future[VatObligationsHttpParser.HttpGetResult[VatObligations]] = TestVatObligationsConnector.getVatObligations(
             vrn = testVrn,
             queryParameters = VatObligationFilters(
@@ -87,7 +90,7 @@ class VatObligationsConnectorSpec extends SpecBase with MockHttp {
         "return a VatObligations model" in {
           setupMockHttpGet(TestVatObligationsConnector.setupDesVatObligationsUrl(testVrn), Seq(
             dateFromKey -> "2017-04-06"
-          ))(successResponse)
+          ))(Future.successful(successResponse))
           val result: Future[VatObligationsHttpParser.HttpGetResult[VatObligations]] = TestVatObligationsConnector.getVatObligations(
             vrn = testVrn,
             queryParameters = VatObligationFilters(
@@ -103,7 +106,7 @@ class VatObligationsConnectorSpec extends SpecBase with MockHttp {
         "return a VatObligations model" in {
           setupMockHttpGet(TestVatObligationsConnector.setupDesVatObligationsUrl(testVrn), Seq(
             dateToKey -> "2018-04-05"
-          ))(successResponse)
+          ))(Future.successful(successResponse))
           val result: Future[VatObligationsHttpParser.HttpGetResult[VatObligations]] = TestVatObligationsConnector.getVatObligations(
             vrn = testVrn,
             queryParameters = VatObligationFilters(
@@ -119,7 +122,7 @@ class VatObligationsConnectorSpec extends SpecBase with MockHttp {
         "return a VatObligations model" in {
           setupMockHttpGet(TestVatObligationsConnector.setupDesVatObligationsUrl(testVrn), Seq(
             statusKey -> "F"
-          ))(successResponse)
+          ))(Future.successful(successResponse))
           val result: Future[VatObligationsHttpParser.HttpGetResult[VatObligations]] = TestVatObligationsConnector.getVatObligations(
             vrn = testVrn,
             queryParameters = VatObligationFilters(
@@ -135,7 +138,7 @@ class VatObligationsConnectorSpec extends SpecBase with MockHttp {
         "return a VatObligations model" in {
           setupMockHttpGet(TestVatObligationsConnector.setupDesVatObligationsUrl(testVrn), Seq(
             statusKey -> "O"
-          ))(successResponse)
+          ))(Future.successful(successResponse))
           val result: Future[VatObligationsHttpParser.HttpGetResult[VatObligations]] = TestVatObligationsConnector.getVatObligations(
             vrn = testVrn,
             queryParameters = VatObligationFilters(
@@ -152,7 +155,7 @@ class VatObligationsConnectorSpec extends SpecBase with MockHttp {
           setupMockHttpGet(TestVatObligationsConnector.setupDesVatObligationsUrl(testVrn), Seq(
             dateFromKey -> "2018-04-05",
             dateToKey -> "2018-04-18"
-          ))(successResponse)
+          ))(Future.successful(successResponse))
           val result: Future[VatObligationsHttpParser.HttpGetResult[VatObligations]] = TestVatObligationsConnector.getVatObligations(
             vrn = testVrn,
             queryParameters = VatObligationFilters(
@@ -170,7 +173,7 @@ class VatObligationsConnectorSpec extends SpecBase with MockHttp {
           setupMockHttpGet(TestVatObligationsConnector.setupDesVatObligationsUrl(testVrn), Seq(
             dateToKey -> "2018-04-05",
             statusKey -> "O"
-          ))(successResponse)
+          ))(Future.successful(successResponse))
           val result: Future[VatObligationsHttpParser.HttpGetResult[VatObligations]] = TestVatObligationsConnector.getVatObligations(
             vrn = testVrn,
             queryParameters = VatObligationFilters(
@@ -185,7 +188,7 @@ class VatObligationsConnectorSpec extends SpecBase with MockHttp {
       "calling for a user with no Query Parameters defined and a success response received" should {
 
         "return a VatObligations model" in {
-          setupMockHttpGet(TestVatObligationsConnector.setupDesVatObligationsUrl(testVrn), Seq())(successResponse)
+          setupMockHttpGet(TestVatObligationsConnector.setupDesVatObligationsUrl(testVrn), Seq())(Future.successful(successResponse))
           val result: Future[VatObligationsHttpParser.HttpGetResult[VatObligations]] = TestVatObligationsConnector.getVatObligations(
             vrn = testVrn,
             queryParameters = VatObligationFilters()
@@ -198,7 +201,7 @@ class VatObligationsConnectorSpec extends SpecBase with MockHttp {
     "calling for a user with non-success response received, single error" should {
 
       "return a Error model" in {
-        setupMockHttpGet(TestVatObligationsConnector.setupDesVatObligationsUrl(testVrn), Seq())(badRequestSingleError)
+        setupMockHttpGet(TestVatObligationsConnector.setupDesVatObligationsUrl(testVrn), Seq())(Future.successful(badRequestSingleError))
         val result: Future[VatObligationsHttpParser.HttpGetResult[VatObligations]] = TestVatObligationsConnector.getVatObligations(
           vrn = testVrn,
           queryParameters = VatObligationFilters()
@@ -210,13 +213,26 @@ class VatObligationsConnectorSpec extends SpecBase with MockHttp {
     "calling for a user with non-success response received, multi error" should {
 
       "return a MultiError model" in {
-        setupMockHttpGet(TestVatObligationsConnector.setupDesVatObligationsUrl(testVrn), Seq())(badRequestMultiError)
+        setupMockHttpGet(TestVatObligationsConnector.setupDesVatObligationsUrl(testVrn), Seq())(Future.successful(badRequestMultiError))
         val result: Future[VatObligationsHttpParser.HttpGetResult[VatObligations]] = TestVatObligationsConnector.getVatObligations(
           vrn = testVrn,
           queryParameters = VatObligationFilters()
         )
         await(result) shouldBe badRequestMultiError
       }
+    }
+
+    "there is a HTTP exception" in {
+      val exception = new RequestTimeoutException("Request returned a http exception")
+
+      setupMockHttpGet(TestVatObligationsConnector.setupDesVatObligationsUrl(testVrn), Seq())(Future.failed(exception))
+
+      val result: Future[VatObligationsHttpParser.HttpGetResult[VatObligations]] = TestVatObligationsConnector.getVatObligations(
+        vrn = testVrn,
+        queryParameters = VatObligationFilters()
+      )
+
+      await(result) shouldBe Left(ErrorResponse(BAD_GATEWAY, Error("BAD_GATEWAY", exception.message)))
     }
 
   }

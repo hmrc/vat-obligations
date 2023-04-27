@@ -33,12 +33,13 @@ Where:
 |obligations|`Array[Obligation]`|**true**|
 
 ##### Obligation object
-|-|-|-|
-|start|`String`|**true**|
-|end|`String`|**true**|
-|due|`String`|**true**|
-|status|`String`|**true**|
-|periodKey|`String`|**true**|
+|Data Item|Type|Mandatory|  
+|-|-|-|  
+|start|`String`|**true**|  
+|end|`String`|**true**|  
+|due|`String`|**true**|  
+|status|`String`|**true**|  
+|periodKey|`String`|**true**|  
 |received|`String`|**false**|
 
 #### Example

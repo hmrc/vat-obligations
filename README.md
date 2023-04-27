@@ -10,7 +10,7 @@ This protected microservice provides a backend for Making Tax Digital for Busine
 
 **Method**: GET
 
-**Path**: /enterprise/obligation-data/:vatNumber
+**Path**: /vat-obligations/:vrn/obligations
 
 Where:
 
@@ -27,25 +27,19 @@ Where:
 
 #### Success Response
 
-##### VatObligations object
+##### Obligations object
 |Data Item|Type|Mandatory|    
 |-|-|-|    
-|obligations|`Array[VatObligation]`|**true**|
+|obligations|`Array[Obligation]`|**true**|
 
-##### VatObligation object
-|Data Item|Type|Mandatory|    
-|-|-|-|    
-|obligations|`Array[ObligationDetail]`|**true**|
-
-##### ObligationDetail object
-|Data Item|Type|Mandatory|    
-|-|-|-|    
-|status|`String`|**true**|
+##### Obligation object
+|-|-|-|
 |start|`String`|**true**|
 |end|`String`|**true**|
-|received|`String`|**false**|
 |due|`String`|**true**|
+|status|`String`|**true**|
 |periodKey|`String`|**true**|
+|received|`String`|**false**|
 
 #### Example
 
@@ -54,22 +48,22 @@ Status: OK (200)
 Response Body:
 ```
 {    
-    "VatObligations": [      
-        {    
-            "VatObligation": [
-                { 
-                    "ObligationDetail": [
-                        {
-                            "status" : "F",    
-                            "start" : "2017-02-02",    
-                            "end" : "2017-04-02",    
-                            "received" : "2017-02-01",
-                            "due": "2017-04-07",
-                            "periodKey": "16AB" 
-                        }
-                    ]
-                }
-            ]
+    "obligations": [
+        {
+            "status" : "F",    
+            "start" : "2017-05-02",    
+            "end" : "2017-07-02",    
+            "received" : "2017-05-01",
+            "due": "2017-07-07",
+            "periodKey": "17AB" 
+        },
+        {
+            "status" : "F",    
+            "start" : "2018-02-02",    
+            "end" : "2018-04-02",    
+            "received" : "2018-02-01",
+            "due": "2018-04-07",
+            "periodKey": "18AB" 
         }
     ]
 }
@@ -78,7 +72,7 @@ Response Body:
 ## Running the application
 To run this microservice, you must have SBT installed. You should then be able to start the application using:
 
-``sbt run```
+```sbt run```
 
 ### Testing
 ```sbt test it:test```

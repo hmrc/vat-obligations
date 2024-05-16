@@ -76,7 +76,10 @@ To run this microservice, you must have SBT installed. You should then be able t
 ```sbt run```
 
 ### Testing
-```sbt test it:test```
+```sbt test it/test```
+
+Run all tests and coverage report:
+```sbt clean coverage test it/test coverageReport```
 
 ### Requirements
 This service is written in [Scala](http://www.scala-lang.org/) and [Play](http://playframework.com/), so needs at least a [JRE](https://www.java.com/en/download/) to run.

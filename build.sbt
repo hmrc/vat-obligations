@@ -15,15 +15,14 @@
  */
 
 import sbt.Tests.{Group, SubProcess}
+import uk.gov.hmrc.DefaultBuildSettings
 import uk.gov.hmrc.DefaultBuildSettings._
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin
 
 val appName = "vat-obligations"
 
-lazy val appDependencies: Seq[ModuleID] = compile ++ test()
 lazy val plugins: Seq[Plugins] = Seq.empty
 lazy val playSettings: Seq[Setting[_]] = Seq.empty
-val bootstrapPlayVersion = "7.15.0"
 
 lazy val coverageSettings: Seq[Setting[_]] = {
   import scoverage.ScoverageKeys
@@ -44,44 +43,32 @@ lazy val coverageSettings: Seq[Setting[_]] = {
   )
 }
 
-val compile = Seq(
-  ws,
-  "uk.gov.hmrc"       %% "bootstrap-backend-play-28" % bootstrapPlayVersion,
-  "com.typesafe.play" %% "play-json-joda"            % "2.10.0-RC7"
-)
-
-def test(scope: String = "test,it"): Seq[ModuleID] = Seq(
-  "uk.gov.hmrc"            %% "bootstrap-test-play-28" % bootstrapPlayVersion % scope,
-  "org.jsoup"              %  "jsoup"                  % "1.15.3"             % scope,
-  "org.scalatestplus"      %% "mockito-3-3"            % "3.2.2.0"            % scope
-)
-
 def oneForkedJvmPerTest(tests: Seq[TestDefinition]): Seq[Group] = tests map {
   test => Group(test.name, Seq(test), SubProcess(
     ForkOptions().withRunJVMOptions(Vector("-Dtest.name=" + test.name))))
 }
+
+ThisBuild / scalaVersion := "2.13.12"
+ThisBuild / majorVersion := 1
 
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(Seq(play.sbt.PlayScala,SbtDistributablesPlugin) ++ plugins : _*)
   .settings(coverageSettings: _*)
   .settings(playSettings : _*)
   .settings(scalaSettings: _*)
-  .settings(majorVersion := 0)
   .settings(defaultSettings(): _*)
-  .settings(scalacOptions ++= Seq("-Wconf:cat=unused-imports&src=.*routes.*:s"))
   .settings(
-    scalaVersion := "2.13.8",
-    libraryDependencies ++= appDependencies,
+    libraryDependencies ++= AppDependencies(),
     retrieveManaged := true,
     routesImport += "binders.VatObligationsBinders._",
+    scalacOptions += "-Wconf:cat=unused-imports&src=routes/.*:s",
     PlayKeys.playDefaultPort := 9155
   )
-  .configs(IntegrationTest)
-  .settings(inConfig(IntegrationTest)(Defaults.itSettings): _*)
-  .settings(
-    IntegrationTest / Keys.fork := false,
-    IntegrationTest / unmanagedSourceDirectories := (IntegrationTest / baseDirectory)(base => Seq(base / "it")).value,
-    addTestReportOption(IntegrationTest, "int-test-reports"),
-    IntegrationTest / testGrouping := oneForkedJvmPerTest((IntegrationTest / definedTests).value),
-    IntegrationTest / parallelExecution := false
-  )
+
+  .disablePlugins(JUnitXmlReportPlugin) //Required to prevent https://github.com/scalatest/scalatest/issues/1427
+
+lazy val it = project.in(file("it"))
+  .enablePlugins(PlayScala)
+  .dependsOn(microservice % "test->test") // the "test->test" allows reusing test code and test dependencies
+  .settings(DefaultBuildSettings.itSettings())
+  .settings(libraryDependencies ++= AppDependencies.it)

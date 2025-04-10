@@ -43,10 +43,6 @@ lazy val coverageSettings: Seq[Setting[?]] = {
   )
 }
 
-def oneForkedJvmPerTest(tests: Seq[TestDefinition]): Seq[Group] = tests map { test =>
-  Group(test.name, Seq(test), SubProcess(ForkOptions().withRunJVMOptions(Vector("-Dtest.name=" + test.name))))
-}
-
 ThisBuild / scalaVersion := "2.13.16"
 ThisBuild / majorVersion := 1
 

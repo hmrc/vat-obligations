@@ -16,15 +16,15 @@
 
 import sbt.Tests.{Group, SubProcess}
 import uk.gov.hmrc.DefaultBuildSettings
-import uk.gov.hmrc.DefaultBuildSettings._
+import uk.gov.hmrc.DefaultBuildSettings.*
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin
 
 val appName = "vat-obligations"
 
-lazy val plugins: Seq[Plugins] = Seq.empty
-lazy val playSettings: Seq[Setting[_]] = Seq.empty
+lazy val plugins: Seq[Plugins]         = Seq.empty
+lazy val playSettings: Seq[Setting[?]] = Seq.empty
 
-lazy val coverageSettings: Seq[Setting[_]] = {
+lazy val coverageSettings: Seq[Setting[?]] = {
   import scoverage.ScoverageKeys
 
   val excludedPackages = Seq(
@@ -38,36 +38,31 @@ lazy val coverageSettings: Seq[Setting[_]] = {
   Seq(
     ScoverageKeys.coverageExcludedPackages := excludedPackages.mkString(";"),
     ScoverageKeys.coverageMinimumStmtTotal := 95,
-    ScoverageKeys.coverageFailOnMinimum := true,
-    ScoverageKeys.coverageHighlighting := true
+    ScoverageKeys.coverageFailOnMinimum    := true,
+    ScoverageKeys.coverageHighlighting     := true
   )
 }
 
-def oneForkedJvmPerTest(tests: Seq[TestDefinition]): Seq[Group] = tests map {
-  test => Group(test.name, Seq(test), SubProcess(
-    ForkOptions().withRunJVMOptions(Vector("-Dtest.name=" + test.name))))
-}
-
-ThisBuild / scalaVersion := "2.13.12"
+ThisBuild / scalaVersion := "2.13.16"
 ThisBuild / majorVersion := 1
 
 lazy val microservice = Project(appName, file("."))
-  .enablePlugins(Seq(play.sbt.PlayScala,SbtDistributablesPlugin) ++ plugins : _*)
+  .enablePlugins(Seq(play.sbt.PlayScala, SbtDistributablesPlugin) ++ plugins: _*)
   .settings(coverageSettings: _*)
-  .settings(playSettings : _*)
+  .settings(playSettings: _*)
   .settings(scalaSettings: _*)
   .settings(defaultSettings(): _*)
   .settings(
     libraryDependencies ++= AppDependencies(),
     retrieveManaged := true,
     routesImport += "binders.VatObligationsBinders._",
-    scalacOptions += "-Wconf:cat=unused-imports&src=routes/.*:s",
+    scalacOptions ++= Seq("-Wconf:cat=unused-imports&src=.*routes.*:s", "-Wconf:cat=unused&src=routes/.*:s"),
     PlayKeys.playDefaultPort := 9155
   )
-
   .disablePlugins(JUnitXmlReportPlugin) //Required to prevent https://github.com/scalatest/scalatest/issues/1427
 
-lazy val it = project.in(file("it"))
+lazy val it = project
+  .in(file("it"))
   .enablePlugins(PlayScala)
   .dependsOn(microservice % "test->test") // the "test->test" allows reusing test code and test dependencies
   .settings(DefaultBuildSettings.itSettings())

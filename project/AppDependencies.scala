@@ -15,7 +15,7 @@
  */
 
 import CompileDependencies.bootstrapVersion
-import sbt._
+import sbt.*
 
 object AppDependencies {
   def apply(): Seq[ModuleID] = CompileDependencies() ++ UnitTestDependencies()
@@ -25,11 +25,11 @@ object AppDependencies {
 }
 
 object CompileDependencies {
-  val bootstrapVersion = "8.5.0"
+  val bootstrapVersion = "8.6.0"
 
   val compile: Seq[ModuleID] = Seq(
     "uk.gov.hmrc"       %% "bootstrap-backend-play-30" % bootstrapVersion,
-    "com.typesafe.play" %% "play-json-joda"            % "2.10.0-RC7"
+    "com.typesafe.play" %% "play-json-joda"            % "2.10.6"
   )
 
   def apply(): Seq[ModuleID] = compile
@@ -39,9 +39,9 @@ object UnitTestDependencies extends CommonTestDependencies {
   override val scope: Configuration = Test
 
   override val test: Seq[ModuleID] = Seq(
-    "org.jsoup"         %  "jsoup"                    % "1.17.2"             % scope,
-    "org.scalatestplus" %% "mockito-4-2"              % "3.2.11.0"           % scope,
-    "uk.gov.hmrc"       %% "bootstrap-test-play-30"   % bootstrapVersion     % scope
+    "org.jsoup"          % "jsoup"                  % "1.19.1"         % scope,
+    "org.scalatestplus" %% "mockito-4-2"            % "3.2.11.0"       % scope,
+    "uk.gov.hmrc"       %% "bootstrap-test-play-30" % bootstrapVersion % scope
   )
 
   def apply(): Seq[ModuleID] = test

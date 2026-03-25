@@ -311,6 +311,61 @@ class VatObligationsHttpParserSpec extends SpecBase {
 
     }
 
+
+    "the http response status is Gateway error Html" should {
+
+      val httpResponse: AnyRef with HttpResponse = HttpResponse(Status.BAD_GATEWAY,
+        """
+          |<html> <head><title>502 Bad Gateway</title></head> <body> <center>
+          |<h1>502 Bad Gateway</h1></center> <hr><center>nginx/1.29.6</center> </body> </html>
+          |""".stripMargin)
+
+      val expected =  Left(ErrorResponse(Status.BAD_GATEWAY, Error("GATEWAY_ERROR", "Received HTML response from downstream")))
+
+      val result: VatObligationsHttpParser.HttpGetResult[VatObligations] = VatObligationsReads.read("", "", httpResponse)
+
+      "return an UnexpectedJsonFormat instance" in {
+        result shouldEqual expected
+      }
+
+    }
+
+    "the http response is an xml and not a json" should {
+
+      val httpResponse = HttpResponse(Status.BAD_REQUEST,
+        """
+          |<am:fault xmlns:am="http://wso2.org/apimanager"><am:code>101504</am:code><am:type>Status report</am:type>
+          |<am:message>Runtime Error</am:message><am:description>Send timeout</am:description></am:fault>
+          |""".stripMargin)
+
+      val expected = Left(ErrorResponse(
+        Status.BAD_REQUEST,
+        Error(
+          code = "TIMEOUT",
+          reason = "Runtime Error - Send timeout"
+        )
+      ))
+
+      val result = VatObligationsReads.read("", "", httpResponse)
+
+      "return an UnexpectedJsonFormat instance" in {
+        result shouldEqual expected
+      }
+
+    }
+
+    "the http response status is NOT_FOUND" should {
+
+      val httpResponse = HttpResponse(Status.NOT_FOUND,"")
+
+      val expected = Left(ErrorResponse(Status.NOT_FOUND, Error("EMPTY_RESPONSE","Downstream returned empty body")))
+
+      val result = VatObligationsReads.read("", "", httpResponse)
+
+      "return a NOT_FOUND status in an Error model" in {
+        result shouldEqual expected
+      }
+    }
   }
 
 }

@@ -246,7 +246,7 @@ class VatObligationsHttpParserSpec extends SpecBase {
 
       val httpResponse: AnyRef with HttpResponse = HttpResponse(Status.BAD_REQUEST, "Banana")
 
-      val expected: Either[InvalidJsonResponse.type, Nothing] = Left(InvalidJsonResponse)
+      val expected =  Left(ErrorResponse(Status.BAD_REQUEST, Error("UNKNOWN_FORMAT", "Banana")))
 
       val result: VatObligationsHttpParser.HttpGetResult[VatObligations] = VatObligationsReads.read("", "", httpResponse)
 
@@ -291,6 +291,24 @@ class VatObligationsHttpParserSpec extends SpecBase {
       "return an Internal Server Error" in {
         result shouldEqual expected
       }
+    }
+
+    "the http response status is 502 BAD_GATEWAY Html" should {
+
+      val httpResponse: AnyRef with HttpResponse = HttpResponse(Status.BAD_GATEWAY,
+        """
+          |<html> <head><title>502 Bad Gateway</title></head> <body> <center>
+          |<h1>502 Bad Gateway</h1></center> <hr><center>nginx/1.29.6</center> </body> </html>
+          |""".stripMargin)
+
+      val expected =  Left(ErrorResponse(Status.BAD_GATEWAY, Error("GATEWAY_ERROR", "Received HTML response from downstream")))
+
+      val result: VatObligationsHttpParser.HttpGetResult[VatObligations] = VatObligationsReads.read("", "", httpResponse)
+
+      "return an UnexpectedJsonFormat instance" in {
+        result shouldEqual expected
+      }
+
     }
 
   }

@@ -31,16 +31,16 @@ class VatObligationsHttpParserSpec extends SpecBase {
 
       val testObligations: VatObligations =
         VatObligations(
-          Seq(VatObligation(
-            Seq(
-              ObligationDetail("F", "1980-02-03", "1980-04-05", Some("1980-02-02"), "1980-04-08", "17AA"),
-              ObligationDetail("F", "1981-02-03", "1981-04-05", Some("1981-02-02"), "1981-04-08", "18AA")
-            )
-          ))
+          Seq(
+            VatObligation(
+              Seq(
+                ObligationDetail("F", "1980-02-03", "1980-04-05", Some("1980-02-02"), "1980-04-08", "17AA"),
+                ObligationDetail("F", "1981-02-03", "1981-04-05", Some("1981-02-02"), "1981-04-08", "18AA")
+              )
+            ))
         )
 
-      val responseJson: JsValue = Json.parse(
-        """{
+      val responseJson: JsValue = Json.parse("""{
           |	"obligations": [{
           |		"identification": {
           |			"referenceNumber": "555555555",
@@ -66,9 +66,9 @@ class VatObligationsHttpParserSpec extends SpecBase {
           |	}]
           |}""".stripMargin)
 
-      val httpResponse: AnyRef with HttpResponse = HttpResponse(Status.OK, responseJson.toString)
+      val httpResponse = HttpResponse(Status.OK, responseJson.toString)
 
-      val expected: Either[Nothing, VatObligations] = Right(testObligations)
+      val expected: Either[Nothing, VatObligations]                      = Right(testObligations)
       val result: VatObligationsHttpParser.HttpGetResult[VatObligations] = VatObligationsReads.read("", "", httpResponse)
 
       "return a VatObligations instance" in {
@@ -80,13 +80,14 @@ class VatObligationsHttpParserSpec extends SpecBase {
 
       val testObligations: VatObligations =
         VatObligations(
-          Seq(VatObligation(
-            Seq(
-              ObligationDetail("F", "1980-02-03", "1980-04-05", Some("1980-02-02"), "1980-04-08", "17AA"),
-              ObligationDetail("F", "1980-02-02", "1980-04-02", Some("1980-02-01"), "1980-04-07", "17AB"),
-              ObligationDetail("F", "1981-02-03", "1981-04-05", None, "1981-04-08", "17AC")
-            )
-          ),
+          Seq(
+            VatObligation(
+              Seq(
+                ObligationDetail("F", "1980-02-03", "1980-04-05", Some("1980-02-02"), "1980-04-08", "17AA"),
+                ObligationDetail("F", "1980-02-02", "1980-04-02", Some("1980-02-01"), "1980-04-07", "17AB"),
+                ObligationDetail("F", "1981-02-03", "1981-04-05", None, "1981-04-08", "17AC")
+              )
+            ),
             VatObligation(
               Seq(
                 ObligationDetail("F", "1981-02-03", "1981-04-05", Some("1981-02-02"), "1981-04-08", "16AA"),
@@ -97,8 +98,7 @@ class VatObligationsHttpParserSpec extends SpecBase {
           )
         )
 
-      val responseJson: JsValue = Json.parse(
-        """{
+      val responseJson: JsValue = Json.parse("""{
           |	"obligations": [{
           |		"obligationDetails": [{
           |			"status": "F",
@@ -146,9 +146,9 @@ class VatObligationsHttpParserSpec extends SpecBase {
           |	}]
           |}""".stripMargin)
 
-      val httpResponse: AnyRef with HttpResponse = HttpResponse(Status.OK, responseJson.toString)
+      val httpResponse = HttpResponse(Status.OK, responseJson.toString)
 
-      val expected: Either[Nothing, VatObligations] = Right(testObligations)
+      val expected: Either[Nothing, VatObligations]                      = Right(testObligations)
       val result: VatObligationsHttpParser.HttpGetResult[VatObligations] = VatObligationsReads.read("", "", httpResponse)
 
       "return a VatObligations instance" in {
@@ -158,7 +158,7 @@ class VatObligationsHttpParserSpec extends SpecBase {
 
     "the http response status is 200 OK but the response is not as expected" should {
 
-      val httpResponse: AnyRef with HttpResponse = HttpResponse(Status.OK, Json.obj("invalid" -> "data").toString)
+      val httpResponse = HttpResponse(Status.OK, Json.obj("invalid" -> "data").toString)
 
       val expected: Either[UnexpectedJsonFormat.type, Nothing] = Left(UnexpectedJsonFormat)
 
@@ -169,201 +169,86 @@ class VatObligationsHttpParserSpec extends SpecBase {
       }
     }
 
-    "the http response status is 400 BAD_REQUEST (single error)" should {
+    "the http response has a non-200 status" should {
+      "return the error in a Left with the original status and handle the response body" when {
+        "the response body matches the single Error format" in {
+          val singleError  = Json.obj("code" -> "CODE", "reason" -> "ERROR MESSAGE").toString
+          val httpResponse = HttpResponse(Status.BAD_REQUEST, singleError)
 
-      val httpResponse: AnyRef with HttpResponse = HttpResponse(Status.BAD_REQUEST,
-        Json.obj(
-          "code" -> "CODE",
-          "reason" -> "ERROR MESSAGE"
-        ).toString
-      )
+          val expectedError = ErrorResponse(Status.BAD_REQUEST, Error(code = "CODE", reason = "ERROR MESSAGE"))
 
-      val expected: Either[ErrorResponse, Nothing] = Left(ErrorResponse(
-        Status.BAD_REQUEST,
-        Error(
-          code = "CODE",
-          reason = "ERROR MESSAGE"
-        )
-      ))
+          val result: VatObligationsHttpParser.HttpGetResult[VatObligations] = VatObligationsReads.read("", "", httpResponse)
 
-      val result: VatObligationsHttpParser.HttpGetResult[VatObligations] = VatObligationsReads.read("", "", httpResponse)
+          result shouldEqual Left(expectedError)
+        }
 
-      "return a Error instance" in {
-        result shouldEqual expected
-      }
-    }
+        "the response body matches the MultiError format" in {
+          val multiError = Json
+            .obj(
+              "failures" -> Json.arr(
+                Json.obj("code" -> "ERROR CODE 1", "reason" -> "ERROR MESSAGE 1"),
+                Json.obj("code" -> "ERROR CODE 2", "reason" -> "ERROR MESSAGE 2")
+              ))
+            .toString
+          val httpResponse = HttpResponse(Status.CONFLICT, multiError)
 
-    "the http response status is 400 BAD_REQUEST (multiple errors)" should {
+          val expectedError = ErrorResponse(
+            Status.CONFLICT,
+            MultiError(failures = Seq(
+              Error(code = "ERROR CODE 1", reason = "ERROR MESSAGE 1"),
+              Error(code = "ERROR CODE 2", reason = "ERROR MESSAGE 2")
+            )))
 
-      val httpResponse: AnyRef with HttpResponse = HttpResponse(Status.BAD_REQUEST,
-        Json.obj(
-          "failures" -> Json.arr(
-            Json.obj(
-              "code" -> "ERROR CODE 1",
-              "reason" -> "ERROR MESSAGE 1"
-            ),
-            Json.obj(
-              "code" -> "ERROR CODE 2",
-              "reason" -> "ERROR MESSAGE 2"
-            )
-          )
-        ).toString
-      )
+          val result: VatObligationsHttpParser.HttpGetResult[VatObligations] = VatObligationsReads.read("", "", httpResponse)
 
-      val expected: Either[ErrorResponse, Nothing] = Left(ErrorResponse(
-        Status.BAD_REQUEST,
-        MultiError(
-          failures = Seq(
-            Error(code = "ERROR CODE 1", reason = "ERROR MESSAGE 1"),
-            Error(code = "ERROR CODE 2", reason = "ERROR MESSAGE 2")
-          )
-        )
-      ))
+          result shouldEqual Left(expectedError)
+        }
 
-      val result: VatObligationsHttpParser.HttpGetResult[VatObligations] = VatObligationsReads.read("", "", httpResponse)
+        "the response body contains Json of an unexpected format, returning an 'UNEXPECTED_JSON_FORMAT' code" in {
+          val unexpectedJsonFormat = Json.obj("notExpected" -> "what", "surprising" -> "huh").toString
+          val httpResponse         = HttpResponse(Status.BAD_GATEWAY, unexpectedJsonFormat)
 
-      "return a MultiError" in {
-        result shouldEqual expected
-      }
+          val unexpectedJsonFormatError = ErrorResponse(Status.BAD_GATEWAY, Error(code = "UNEXPECTED_JSON_FORMAT", reason = unexpectedJsonFormat))
 
-    }
+          val result: VatObligationsHttpParser.HttpGetResult[VatObligations] = VatObligationsReads.read("", "", httpResponse)
 
-    "the http response status is 400 BAD_REQUEST (Unexpected Json Returned)" should {
+          result shouldEqual Left(unexpectedJsonFormatError)
+        }
 
-      val httpResponse: AnyRef with HttpResponse = HttpResponse(Status.BAD_REQUEST, Json.obj("foo" -> "bar").toString)
+        "the response body contains an HTML message, returning an 'HTML_RESPONSE' code and extracting the error message" in {
+          val htmlFormat =
+            "<html><head><title>Error</title></head><body><h1>502 Bad Gateway</h1></body></html>"
+          val httpResponse = HttpResponse(Status.BAD_GATEWAY, htmlFormat)
 
-      val expected: Either[UnexpectedJsonFormat.type, Nothing] = Left(UnexpectedJsonFormat)
+          val result: VatObligationsHttpParser.HttpGetResult[VatObligations] = VatObligationsReads.read("", "", httpResponse)
 
-      val result: VatObligationsHttpParser.HttpGetResult[VatObligations] = VatObligationsReads.read("", "", httpResponse)
+          val expectedHtmlError = ErrorResponse(Status.BAD_GATEWAY, Error(code = "HTML_RESPONSE", reason = "Error - 502 Bad Gateway"))
+          result shouldEqual Left(expectedHtmlError)
+        }
 
-      "return an UnexpectedJsonFormat instance" in {
-        result shouldEqual expected
-      }
+        "the response body contains an XML message, returning an 'XML_RESPONSE' code and extracting the error message" in {
+          val xmlFormat = """
+                                        |<am:fault xmlns:am="http://wso2.org/apimanager"><am:code>101504</am:code><am:type>Status report</am:type>
+                                        |<am:message>Runtime Error</am:message><am:description>Send timeout</am:description></am:fault>
+                                        |""".stripMargin
+          val httpResponse = HttpResponse(Status.BAD_GATEWAY, xmlFormat)
 
-    }
+          val result: VatObligationsHttpParser.HttpGetResult[VatObligations] = VatObligationsReads.read("", "", httpResponse)
 
-    "the http response status is 400 BAD_REQUEST (Bad Json Returned)" should {
+          val expectedXmlError = ErrorResponse(Status.BAD_GATEWAY, Error(code = "XML_RESPONSE", reason = "Runtime Error - Send timeout"))
+          result shouldEqual Left(expectedXmlError)
+        }
 
-      val httpResponse: AnyRef with HttpResponse = HttpResponse(Status.BAD_REQUEST, "Banana")
+        "the response body contains non-Json, returning an 'INVALID_JSON' code" in {
+          val unknownFormatBody = "This is not in a valid format"
+          val httpResponse      = HttpResponse(Status.INTERNAL_SERVER_ERROR, unknownFormatBody)
 
-      val expected =  Left(ErrorResponse(Status.BAD_REQUEST, Error("UNKNOWN_FORMAT", "Banana")))
+          val unknownFormatError = ErrorResponse(Status.INTERNAL_SERVER_ERROR, Error(code = "INVALID_JSON", reason = unknownFormatBody))
 
-      val result: VatObligationsHttpParser.HttpGetResult[VatObligations] = VatObligationsReads.read("", "", httpResponse)
+          val result: VatObligationsHttpParser.HttpGetResult[VatObligations] = VatObligationsReads.read("", "", httpResponse)
 
-      "return an UnexpectedJsonFormat instance" in {
-        result shouldEqual expected
-      }
-
-    }
-
-    "the http response status is 500 Internal Server Error" should {
-
-      val httpResponse: AnyRef with HttpResponse = HttpResponse(Status.INTERNAL_SERVER_ERROR,
-        Json.obj(
-          "code" -> "code",
-          "reason" -> "message"
-        ).toString
-      )
-
-      val expected: Either[ErrorResponse, Nothing] = Left(ErrorResponse(
-        Status.INTERNAL_SERVER_ERROR,
-        Error(
-          code = "code",
-          reason = "message"
-        )
-      ))
-
-      val result: VatObligationsHttpParser.HttpGetResult[VatObligations] = VatObligationsReads.read("", "", httpResponse)
-
-      "return an Internal Server Error" in {
-        result shouldEqual expected
-      }
-    }
-
-    "the http response status is unexpected" should {
-
-      val httpResponse: AnyRef with HttpResponse = HttpResponse(Status.SEE_OTHER, "")
-
-      val expected: Either[UnexpectedResponse.type, Nothing] = Left(UnexpectedResponse)
-
-      val result: VatObligationsHttpParser.HttpGetResult[VatObligations] = VatObligationsReads.read("", "", httpResponse)
-
-      "return an Internal Server Error" in {
-        result shouldEqual expected
-      }
-    }
-
-    "the http response status is 502 BAD_GATEWAY Html" should {
-
-      val httpResponse: AnyRef with HttpResponse = HttpResponse(Status.BAD_GATEWAY,
-        """
-          |<html> <head><title>502 Bad Gateway</title></head> <body> <center>
-          |<h1>502 Bad Gateway</h1></center> <hr><center>nginx/1.29.6</center> </body> </html>
-          |""".stripMargin)
-
-      val expected =  Left(ErrorResponse(Status.BAD_GATEWAY, Error("GATEWAY_ERROR", "Received HTML response from downstream")))
-
-      val result: VatObligationsHttpParser.HttpGetResult[VatObligations] = VatObligationsReads.read("", "", httpResponse)
-
-      "return an UnexpectedJsonFormat instance" in {
-        result shouldEqual expected
-      }
-
-    }
-
-
-    "the http response status is Gateway error Html" should {
-
-      val httpResponse: AnyRef with HttpResponse = HttpResponse(Status.BAD_GATEWAY,
-        """
-          |<html> <head><title>502 Bad Gateway</title></head> <body> <center>
-          |<h1>502 Bad Gateway</h1></center> <hr><center>nginx/1.29.6</center> </body> </html>
-          |""".stripMargin)
-
-      val expected =  Left(ErrorResponse(Status.BAD_GATEWAY, Error("GATEWAY_ERROR", "Received HTML response from downstream")))
-
-      val result: VatObligationsHttpParser.HttpGetResult[VatObligations] = VatObligationsReads.read("", "", httpResponse)
-
-      "return an UnexpectedJsonFormat instance" in {
-        result shouldEqual expected
-      }
-
-    }
-
-    "the http response is an xml and not a json" should {
-
-      val httpResponse = HttpResponse(Status.BAD_REQUEST,
-        """
-          |<am:fault xmlns:am="http://wso2.org/apimanager"><am:code>101504</am:code><am:type>Status report</am:type>
-          |<am:message>Runtime Error</am:message><am:description>Send timeout</am:description></am:fault>
-          |""".stripMargin)
-
-      val expected = Left(ErrorResponse(
-        Status.BAD_REQUEST,
-        Error(
-          code = "TIMEOUT",
-          reason = "Runtime Error - Send timeout"
-        )
-      ))
-
-      val result = VatObligationsReads.read("", "", httpResponse)
-
-      "return an UnexpectedJsonFormat instance" in {
-        result shouldEqual expected
-      }
-
-    }
-
-    "the http response status is NOT_FOUND" should {
-
-      val httpResponse = HttpResponse(Status.NOT_FOUND,"")
-
-      val expected = Left(ErrorResponse(Status.NOT_FOUND, Error("EMPTY_RESPONSE","Downstream returned empty body")))
-
-      val result = VatObligationsReads.read("", "", httpResponse)
-
-      "return a NOT_FOUND status in an Error model" in {
-        result shouldEqual expected
+          result shouldEqual Left(unknownFormatError)
+        }
       }
     }
   }

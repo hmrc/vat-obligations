@@ -23,106 +23,63 @@ import utils.LoggerUtil
 
 import scala.util.{Failure, Success, Try}
 
-
 trait ResponseHttpParsers extends LoggerUtil {
 
   type HttpGetResult[T] = Either[ErrorResponse, T]
 
   private val MaxBodyLength = 300
 
-  protected def handleErrorResponse(response: HttpResponse): Left[ErrorResponse, Nothing] = {
-
-    val status = response.status
-    val body = Option(response.body).getOrElse("").trim
-
-    logger.debug(s"[ResponseHttpParsers] status=$status")
-
-    val errorResponse: ErrorResponse = classifyBody(body) match {
-
-      case Empty =>
-        ErrorResponse(status, Error("EMPTY_RESPONSE", "Downstream returned empty body"))
-
-      case JsonBody =>
-        parseJson(body, status)
-
-      case XmlBody =>
-        val message = extractXmlMessage(body)
-        val code = if (message.toLowerCase.contains("timeout")) "TIMEOUT" else "BACKEND_FAULT"
-        logger.info(s"[ResponseHttpParsers] XML response received: $message")
-        ErrorResponse(status, Error(code, message))
-
-      case HtmlBody =>
-        logger.info("[ResponseHttpParsers] HTML response received from downstream")
-        ErrorResponse(
-          status,
-          Error("GATEWAY_ERROR", "Received HTML response from downstream")
-        )
-
-      case Unknown =>
-        val truncated = body.take(MaxBodyLength)
-        logger.warn(s"[ResponseHttpParsers] Unknown response format: $truncated")
-        ErrorResponse(
-          status,
-          Error("UNKNOWN_FORMAT", truncated)
-        )
+  protected def handleErrorResponse(response: HttpResponse): ErrorResponse = {
+    val responseBody = Option(response.body).getOrElse("").trim
+    val error = if (responseBody == "") {
+      Error("EMPTY_RESPONSE", "Downstream returned empty body")
+    } else if (responseBody.contains("<am:fault")) {
+      val message = extractXmlMessage(responseBody)
+      Error("XML_RESPONSE", message)
+    } else if (responseBody.contains("<html")) {
+      val message = extractHtmlMessage(responseBody)
+      Error("HTML_RESPONSE", message)
+    } else {
+      attemptToParseErrorToJson(responseBody)
     }
 
-    Left(errorResponse)
+    ErrorResponse(response.status, error)
   }
 
-  private def classifyBody(body: String): BodyType = body match {
-    case "" => Empty
-    case b if b.startsWith("{") || b.startsWith("[") => JsonBody
-    case b if b.contains("<am:fault") => XmlBody
-    case b if b.toLowerCase.contains("<html") => HtmlBody
-    case _ => Unknown
-  }
-
-  private def parseJson(body: String, status: Int): ErrorResponse =
+  private def attemptToParseErrorToJson(body: String): Errors =
     Try(Json.parse(body)) match {
-
       case Success(json) =>
-        json.asOpt[MultiError]
-          .orElse(json.asOpt[Error]) match {
-
-          case Some(err) =>
-            ErrorResponse(status, err)
-
+        json.asOpt[MultiError].orElse(json.asOpt[Error]) match {
+          case Some(error) =>
+            error
           case None =>
-            val truncated = body.take(MaxBodyLength)
-            logger.warn(s"[ResponseHttpParsers] Unexpected JSON structure: $truncated")
-            UnexpectedJsonFormat
+            val truncatedErrorMsg = body.take(MaxBodyLength)
+            Error(code = "UNEXPECTED_JSON_FORMAT", reason = truncatedErrorMsg)
         }
-
       case Failure(_) =>
-        val truncated = body.take(MaxBodyLength)
-        logger.info(s"[ResponseHttpParsers] Invalid JSON response: $truncated")
-        InvalidJsonResponse
+        val truncatedErrorMsg = body.take(MaxBodyLength)
+        Error(code = "INVALID_JSON", reason = truncatedErrorMsg)
     }
 
-  private def extractXmlMessage(xml: String): String = {
-
-    def extract(tag: String) =
-      s"<$tag>(.*?)</$tag>".r.findFirstMatchIn(xml).map(_.group(1))
-
+  private def extractXmlMessage(xml: String): String =
     List(
-      extract("am:message"),
-      extract("am:description")
+      extractContentBetweenTags("am:message", xml),
+      extractContentBetweenTags("am:description", xml)
     ).flatten.mkString(" - ") match {
-      case "" => "XML fault received"
-      case m => m
+      case "" => s"Unable to extract message: $xml"
+      case m  => m
     }
-  }
 
-  private sealed trait BodyType
+  private def extractHtmlMessage(html: String): String =
+    List(
+      extractContentBetweenTags("title", html),
+      extractContentBetweenTags("h1", html)
+    ).flatten.mkString(" - ") match {
+      case "" => s"Unable to extract message: $html"
+      case m  => m
+    }
 
-  private case object Empty extends BodyType
+  private def extractContentBetweenTags(tag: String, content: String): Option[String] =
+    s"<$tag>(.*?)</$tag>".r.findFirstMatchIn(content).map(_.group(1))
 
-  private case object JsonBody extends BodyType
-
-  private case object XmlBody extends BodyType
-
-  private case object HtmlBody extends BodyType
-
-  private case object Unknown extends BodyType
 }

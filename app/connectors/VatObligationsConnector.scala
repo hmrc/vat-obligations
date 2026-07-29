@@ -34,7 +34,7 @@ class VatObligationsConnector @Inject()(val http: HttpClient, val appConfig: Mic
   private[connectors] def setupDesVatObligationsUrl(vrn: String): String = appConfig.desServiceUrl +
     appConfig.setupDesObligationsStartPath + vrn + appConfig.setupDesObligationsEndPath
 
-  val desHeaders = Seq("Authorization" -> s"Bearer ${appConfig.desToken}", "Environment" -> appConfig.desEnvironment)
+  private val desHeaders = Seq("Authorization" -> s"Bearer ${appConfig.desToken}", "Environment" -> appConfig.desEnvironment)
 
   def getVatObligations(vrn: String, queryParameters: VatObligationFilters)
                        (implicit headerCarrier: HeaderCarrier, ec: ExecutionContext): Future[HttpGetResult[VatObligations]] = {
@@ -42,13 +42,11 @@ class VatObligationsConnector @Inject()(val http: HttpClient, val appConfig: Mic
     val url = setupDesVatObligationsUrl(vrn)
     val hc = headerCarrier.copy(authorization = None)
 
-    logger.debug(s"[VatObligationsConnector][getVatObligations] - Calling GET $url \nHeaders: $desHeaders\n QueryParams: $queryParameters")
     http.GET(url, queryParameters.toSeqQueryParams, desHeaders)(VatObligationsReads, hc, ec).map {
       case vatObligations@Right(_) =>
         vatObligations
       case error@Left(response) => response.status match {
         case NOT_FOUND =>
-          logger.debug("[VatObligationsConnector][getVatObligations] Error Received: " + response)
           error
         case _ =>
           logger.warn("[VatObligationsConnector][getVatObligations] Error Received: " + response)

@@ -34,13 +34,10 @@ class VatObligationsService @Inject()(val vatObligationsConnector: VatObligation
                         queryParameters: VatObligationFilters)
                               (implicit headerCarrier: HeaderCarrier, ec: ExecutionContext): Future[Either[ErrorResponse, VatObligations]] = {
 
-    logger.debug(s"[VatObligationsService][getVatObligations] Auditing Vat Obligations request")
     auditingService.audit(VatObligationsRequestAuditModel(vrn, queryParameters))
 
-    logger.debug(s"[VatObligationsService][getVatObligations] Calling vatObligationsConnector with Vrn: $vrn\nParams: $queryParameters")
     vatObligationsConnector.getVatObligations(vrn, queryParameters).map {
       case success@Right(vatObligations) =>
-        logger.debug(s"[VatObligationsService][getVatObligations] Auditing Vat Obligations response")
         auditingService.audit(VatObligationsResponseAuditModel(vrn, vatObligations))
         success
       case error@Left(_) =>
